@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="swordGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="swordGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4"/>
+      <stop offset="100%" style="stop-color:#a855f7"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#1e1b4b" stroke="#312e81" stroke-width="2"/>
+  
+  <!-- First Sword (top-left to bottom-right) -->
+  <g filter="url(#glow)">
+    <path d="M40 30 L130 120 L120 130 L30 40 Z" fill="url(#swordGrad1)" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="30" cy="30" r="10" fill="#fbbf24" stroke="#ffffff" stroke-width="2"/>
+    <rect x="25" y="42" width="10" height="25" rx="3" fill="#6b7280"/>
+    <rect x="23" y="38" width="14" height="6" rx="2" fill="#9ca3af"/>
+  </g>
+  
+  <!-- Second Sword (top-right to bottom-left) -->
+  <g filter="url(#glow)">
+    <path d="M160 30 L70 120 L80 130 L170 40 Z" fill="url(#swordGrad2)" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="170" cy="30" r="10" fill="#fbbf24" stroke="#ffffff" stroke-width="2"/>
+    <rect x="165" y="42" width="10" height="25" rx="3" fill="#6b7280"/>
+    <rect x="163" y="38" width="14" height="6" rx="2" fill="#9ca3af"/>
+  </g>
+  
+  <!-- Clash spark in center -->
+  <g filter="url(#glow)">
+    <circle cx="100" cy="100" r="12" fill="#fbbf24"/>
+    <circle cx="100" cy="100" r="6" fill="#ffffff"/>
+  </g>
+</svg>

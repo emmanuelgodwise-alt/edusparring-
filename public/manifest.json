@@ -1,0 +1,62 @@
+{
+  "name": "EduSparring - AI Competitive Learning",
+  "short_name": "EduSparring",
+  "description": "Turn knowledge into competitive battles. Practice lessons, prepare for exams, and compete with students worldwide.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0a1f",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "social", "games"],
+  "icons": [
+    {
+      "src": "/icons/icon-512x512.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quick Match",
+      "short_name": "Match",
+      "description": "Start a quick knowledge battle",
+      "url": "/?action=quickmatch"
+    },
+    {
+      "name": "Messages",
+      "short_name": "Chat",
+      "description": "View your messages",
+      "url": "/social"
+    },
+    {
+      "name": "Leaderboard",
+      "short_name": "Ranks",
+      "description": "View global rankings",
+      "url": "/leaderboard"
+    },
+    {
+      "name": "Careers",
+      "short_name": "Jobs",
+      "description": "Explore mock job opportunities",
+      "url": "/careers"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}

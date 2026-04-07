@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html><head><style>
+html { background: #193328; }
+body { width: 720pt; height: 405pt; margin: 0; padding: 0; font-family: Arial, sans-serif; display: flex; flex-direction: column; background: #193328; }
+.header { padding: 20pt 40pt 10pt 40pt; }
+.header-title { font-size: 28pt; font-weight: bold; color: #FFFFFF; margin: 0; }
+.content { flex: 1; padding: 10pt 40pt 25pt 40pt; display: flex; gap: 25pt; }
+.metrics-col { width: 180pt; }
+.metric-item { margin-bottom: 18pt; }
+.metric-year { font-size: 11pt; color: #FFFFFF; opacity: 0.7; margin: 0; }
+.metric-value { font-size: 28pt; font-weight: bold; color: #37DCF2; margin: 3pt 0; }
+.metric-label { font-size: 10pt; color: #FFFFFF; margin: 0; opacity: 0.8; }
+.chart-col { flex: 1; }
+.chart-placeholder { width: 100%; height: 200pt; }
+</style></head>
+<body>
+<div class="header">
+<h1 class="header-title">Financial Projections</h1>
+</div>
+<div class="content">
+<div class="metrics-col">
+<div class="metric-item">
+<p class="metric-year">Year 1</p>
+<p class="metric-value">$2.4M</p>
+<p class="metric-label">ARR</p>
+</div>
+<div class="metric-item">
+<p class="metric-year">Year 3</p>
+<p class="metric-value">$18M</p>
+<p class="metric-label">ARR</p>
+</div>
+<div class="metric-item">
+<p class="metric-year">Year 5</p>
+<p class="metric-value">$65M</p>
+<p class="metric-label">ARR</p>
+</div>
+</div>
+<div class="chart-col">
+<div id="chart" class="placeholder chart-placeholder"></div>
+</div>
+</div>
+</body></html>

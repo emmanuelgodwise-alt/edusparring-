@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="bookGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+    <linearGradient id="bookGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4"/>
+      <stop offset="100%" style="stop-color:#0891b2"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#0f0a1a"/>
+  <circle cx="100" cy="100" r="90" fill="none" stroke="url(#purpleGrad)" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Left Book -->
+  <g transform="translate(25, 50) rotate(-10)">
+    <!-- Book body -->
+    <rect x="0" y="0" width="50" height="70" rx="3" fill="url(#bookGrad1)" filter="url(#glow)"/>
+    <!-- Book spine -->
+    <rect x="0" y="0" width="8" height="70" rx="2" fill="#5b21b6"/>
+    <!-- Pages -->
+    <rect x="10" y="5" width="35" height="60" rx="1" fill="#fef3c7"/>
+    <line x1="15" y1="15" x2="40" y2="15" stroke="#d97706" stroke-width="1" opacity="0.5"/>
+    <line x1="15" y1="25" x2="38" y2="25" stroke="#d97706" stroke-width="1" opacity="0.5"/>
+    <line x1="15" y1="35" x2="42" y2="35" stroke="#d97706" stroke-width="1" opacity="0.5"/>
+    
+    <!-- Graduation Cap -->
+    <g transform="translate(-5, -25)">
+      <polygon points="30,5 5,15 30,25 55,15" fill="#1e1b4b"/>
+      <rect x="27" y="5" width="6" height="15" fill="#1e1b4b"/>
+      <circle cx="55" cy="15" r="4" fill="#fbbf24"/>
+      <line x1="55" y1="15" x2="55" y2="25" stroke="#fbbf24" stroke-width="1"/>
+    </g>
+    
+    <!-- Boxing Glove -->
+    <g transform="translate(40, 25)">
+      <ellipse cx="15" cy="20" rx="18" ry="22" fill="#dc2626"/>
+      <ellipse cx="15" cy="15" rx="14" ry="12" fill="#ef4444"/>
+      <rect x="8" y="-5" width="14" height="15" rx="3" fill="#dc2626"/>
+      <ellipse cx="10" cy="30" rx="8" ry="5" fill="#b91c1c"/>
+    </g>
+  </g>
+  
+  <!-- Right Book -->
+  <g transform="translate(125, 50) scale(-1,1) translate(-200,0) rotate(-10)">
+    <!-- Book body -->
+    <rect x="0" y="0" width="50" height="70" rx="3" fill="url(#bookGrad2)" filter="url(#glow)"/>
+    <!-- Book spine -->
+    <rect x="0" y="0" width="8" height="70" rx="2" fill="#0e7490"/>
+    <!-- Pages -->
+    <rect x="10" y="5" width="35" height="60" rx="1" fill="#fef3c7"/>
+    <line x1="15" y1="15" x2="40" y2="15" stroke="#d97706" stroke-width="1" opacity="0.5"/>
+    <line x1="15" y1="25" x2="38" y2="25" stroke="#d97706" stroke-width="1" opacity="0.5"/>
+    <line x1="15" y1="35" x2="42" y2="35" stroke="#d97706" stroke-width="1" opacity="0.5"/>
+    
+    <!-- Graduation Cap -->
+    <g transform="translate(-5, -25)">
+      <polygon points="30,5 5,15 30,25 55,15" fill="#164e63"/>
+      <rect x="27" y="5" width="6" height="15" fill="#164e63"/>
+      <circle cx="55" cy="15" r="4" fill="#fbbf24"/>
+      <line x1="55" y1="15" x2="55" y2="25" stroke="#fbbf24" stroke-width="1"/>
+    </g>
+    
+    <!-- Boxing Glove -->
+    <g transform="translate(40, 25)">
+      <ellipse cx="15" cy="20" rx="18" ry="22" fill="#dc2626"/>
+      <ellipse cx="15" cy="15" rx="14" ry="12" fill="#ef4444"/>
+      <rect x="8" y="-5" width="14" height="15" rx="3" fill="#dc2626"/>
+      <ellipse cx="10" cy="30" rx="8" ry="5" fill="#b91c1c"/>
+    </g>
+  </g>
+  
+  <!-- VS Spark -->
+  <g transform="translate(100, 100)">
+    <polygon points="0,-15 5,-5 15,-5 7,2 10,12 0,6 -10,12 -7,2 -15,-5 -5,-5" fill="#fbbf24" filter="url(#glow)"/>
+  </g>
+  
+  <!-- Action lines -->
+  <g opacity="0.6">
+    <line x1="85" y1="90" x2="75" y2="85" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/>
+    <line x1="80" y1="100" x2="68" y2="100" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/>
+    <line x1="85" y1="110" x2="75" y2="115" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/>
+    
+    <line x1="115" y1="90" x2="125" y2="85" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"/>
+    <line x1="120" y1="100" x2="132" y2="100" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"/>
+    <line x1="115" y1="110" x2="125" y2="115" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>

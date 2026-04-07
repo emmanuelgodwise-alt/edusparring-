@@ -1,0 +1,1622 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model with Knowledge Rating system
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String
+  password         String? // Hashed password for credentials auth
+  avatar           String?
+  knowledgeRating  Int       @default(800) // KR: 800 (Beginner) to 2000+ (Elite)
+  level            String    @default("High School") // Elementary, Middle School, High School, College, Professional
+  bio              String?
+  country          String?
+  language         String    @default("en") // UI language preference (en, es, fr, zh, ar, hi, pt)
+  isGlobalChampion Boolean   @default(false) // Global champion badge
+  points           Int       @default(0)
+  totalWins        Int       @default(0)
+  totalLosses      Int       @default(0)
+  currentStreak    Int       @default(0)
+  bestStreak       Int       @default(0)
+  emailVerified    DateTime?
+  image            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // OAuth accounts
+  accounts Account[]
+  sessions Session[]
+
+  // Relations
+  subjects         UserSubject[]
+  friends          Friendship[]      @relation("UserFriends")
+  friendOf         Friendship[]      @relation("UserFriendOf")
+  matchesAsP1      Match[]           @relation("Player1Matches")
+  matchesAsP2      Match[]           @relation("Player2Matches")
+  wonMatches       Match[]           @relation("MatchWinner")
+  progress         UserProgress[]
+  achievements     UserAchievement[]
+  leaderboards     Leaderboard[]
+  createdQuestions Question[]        @relation("QuestionCreator")
+  seasonProgress   SeasonProgress[]
+  sentMessages     Message[]         @relation("MessageSender")
+  receivedMessages Message[]         @relation("MessageReceiver")
+  activities       Activity[]
+  activityLikes    ActivityLike[]
+  activityComments ActivityComment[]
+  status           UserStatus?
+}
+
+// User's selected subjects
+model UserSubject {
+  id          String @id @default(cuid())
+  userId      String
+  subject     String // Math, Physics, Chemistry, Biology, History, etc.
+  proficiency Int    @default(0) // 0-100
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, subject])
+}
+
+// Friendship relations
+model Friendship {
+  id          String   @id @default(cuid())
+  requesterId String
+  accepterId  String
+  status      String   @default("pending") // pending, accepted, rejected
+  createdAt   DateTime @default(now())
+
+  requester User @relation("UserFriends", fields: [requesterId], references: [id], onDelete: Cascade)
+  accepter  User @relation("UserFriendOf", fields: [accepterId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, accepterId])
+}
+
+// Question bank
+model Question {
+  id            String       @id @default(cuid())
+  subject       String // Math, Physics, Chemistry, etc.
+  topic         String // e.g., "Algebra: Quadratic Equations"
+  difficulty    String       @default("medium") // easy, medium, hard, expert
+  type          String       @default("multiple_choice") // multiple_choice, short_answer, long_explanation
+  text          String // The question text
+  options       String // JSON string for MCQ options: ["option1", "option2", ...]
+  correctAnswer String
+  explanation   String
+  pointsValue   Int          @default(10)
+  timesUsed     Int          @default(0)
+  successRate   Float        @default(0)
+  createdAt     DateTime     @default(now())
+  createdById   String?
+  createdBy     User?        @relation("QuestionCreator", fields: [createdById], references: [id])
+  rounds        MatchRound[]
+}
+
+// Match/Spar session
+model Match {
+  id           String    @id @default(cuid())
+  player1Id    String
+  player2Id    String
+  mode         String    @default("quick") // quick, ranked, challenge, tournament
+  subject      String?
+  status       String    @default("waiting") // waiting, active, completed, cancelled
+  totalRounds  Int       @default(5)
+  currentRound Int       @default(0)
+  player1Score Int       @default(0)
+  player2Score Int       @default(0)
+  difficulty   String    @default("medium")
+  winnerId     String?
+  startedAt    DateTime?
+  endedAt      DateTime?
+  createdAt    DateTime  @default(now())
+
+  player1 User         @relation("Player1Matches", fields: [player1Id], references: [id])
+  player2 User         @relation("Player2Matches", fields: [player2Id], references: [id])
+  winner  User?        @relation("MatchWinner", fields: [winnerId], references: [id])
+  rounds  MatchRound[]
+}
+
+// Individual round within a match
+model MatchRound {
+  id             String   @id @default(cuid())
+  matchId        String
+  roundNumber    Int
+  questionId     String
+  question       Question @relation(fields: [questionId], references: [id])
+  player1Answer  String?
+  player2Answer  String?
+  player1Time    Int?
+  player2Time    Int?
+  player1Correct Boolean  @default(false)
+  player2Correct Boolean  @default(false)
+  winnerId       String?
+  pointsAwarded  Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+}
+
+// Track user progress per subject/topic
+model UserProgress {
+  id              String   @id @default(cuid())
+  userId          String
+  subject         String
+  topic           String
+  totalQuestions  Int      @default(0)
+  correctAnswers  Int      @default(0)
+  avgResponseTime Float    @default(0)
+  streak          Int      @default(0)
+  weaknessScore   Float    @default(0) // 0-100, higher means more weakness
+  lastPracticed   DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, subject, topic])
+}
+
+// Achievement definitions
+model Achievement {
+  id                    String               @id @default(cuid())
+  name                  String               @unique
+  description           String
+  icon                  String // Emoji or icon identifier
+  category              String // battle, learning, social, special
+  requirement           String // Description of how to earn
+  pointsRequired        Int                  @default(0)
+  rarity                String               @default("common") // common, rare, epic, legendary
+  users                 UserAchievement[]
+  achievementCategory   AchievementCategory? @relation(fields: [achievementCategoryId], references: [id])
+  achievementCategoryId String?
+}
+
+// User earned achievements
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  achievementId String
+  earnedAt      DateTime    @default(now())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+}
+
+// Tournament structure
+model Tournament {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  subject         String?
+  startDate       DateTime
+  endDate         DateTime
+  maxParticipants Int      @default(64)
+  participants    String   @default("[]") // JSON array of userIds
+  bracket         String   @default("{}") // JSON for bracket structure
+  prizePool       Int      @default(0)
+  status          String   @default("upcoming") // upcoming, active, completed
+  winnerId        String?
+  createdAt       DateTime @default(now())
+}
+
+// Leaderboard entries
+model Leaderboard {
+  id        String   @id @default(cuid())
+  userId    String
+  category  String // global, country, subject_math, subject_physics, etc.
+  rank      Int
+  score     Int
+  period    String   @default("all_time") // daily, weekly, monthly, all_time
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category, period])
+}
+
+// Season for Ranked Leagues (60-90 day competitive periods)
+model Season {
+  id               String   @id @default(cuid())
+  name             String
+  number           Int      @unique
+  startDate        DateTime
+  endDate          DateTime
+  status           String   @default("upcoming") // upcoming, active, ended
+  rewards          String   @default("[]") // JSON array of SeasonReward
+  participantCount Int      @default(0)
+  winnerId         String? // Season champion
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  playerProgress SeasonProgress[]
+
+  @@index([status])
+}
+
+// Player season progress tracking
+model SeasonProgress {
+  id             String   @id @default(cuid())
+  userId         String
+  seasonId       String
+  startingRating Int      @default(800)
+  peakRating     Int      @default(800)
+  finalRating    Int      @default(800)
+  wins           Int      @default(0)
+  losses         Int      @default(0)
+  rankAchieved   String   @default("bronze") // highest rank achieved
+  rewardsEarned  String   @default("[]") // JSON array of earned reward IDs
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, seasonId])
+}
+
+// Shareable battle highlights
+model BattleHighlight {
+  id            String   @id @default(cuid())
+  matchId       String   @unique
+  moments       String   @default("[]") // JSON array of highlight moments
+  stats         String   @default("{}") // JSON for match stats
+  shareCount    Int      @default(0)
+  viewCount     Int      @default(0)
+  trendingScore Float    @default(0)
+  createdAt     DateTime @default(now())
+
+  @@index([trendingScore])
+  @@index([createdAt])
+}
+
+// Direct Messages between friends
+model Message {
+  id              String   @id @default(cuid())
+  senderId        String
+  receiverId      String
+  content         String
+  originalContent String? // Original message before translation
+  originalLang    String? // Original language code
+  translated      Boolean  @default(false)
+  isRead          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  sender   User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([createdAt])
+}
+
+// User Language Preferences
+model UserLanguagePreference {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  nativeLanguage        String   @default("en")
+  preferredChatLanguage String   @default("en")
+  autoTranslate         Boolean  @default(true)
+  showOriginalText      Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Translation Cache for performance
+model TranslationCache {
+  id             String   @id @default(cuid())
+  sourceText     String
+  sourceLanguage String
+  targetLanguage String
+  translatedText String
+  createdAt      DateTime @default(now())
+
+  @@unique([sourceText, sourceLanguage, targetLanguage])
+  @@index([sourceLanguage, targetLanguage])
+}
+
+// Activity Feed items
+model Activity {
+  id            String   @id @default(cuid())
+  userId        String
+  type          String // match_result, achievement_earned, leaderboard_change, friend_activity
+  content       String // JSON for flexible content
+  matchId       String? // Reference to match if applicable
+  visibility    String   @default("friends") // public, friends, private
+  likesCount    Int      @default(0)
+  commentsCount Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes    ActivityLike[]
+  comments ActivityComment[]
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// Activity Likes
+model ActivityLike {
+  id         String   @id @default(cuid())
+  activityId String
+  userId     String
+  createdAt  DateTime @default(now())
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([activityId, userId])
+}
+
+// Activity Comments
+model ActivityComment {
+  id         String   @id @default(cuid())
+  activityId String
+  userId     String
+  content    String
+  createdAt  DateTime @default(now())
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([activityId])
+  @@index([createdAt])
+}
+
+// User Online Status
+model UserStatus {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  isOnline        Boolean  @default(false)
+  lastSeen        DateTime @default(now())
+  currentActivity String? // "in_match", "in_queue", "idle"
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// NextAuth - Account (OAuth providers)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+// NextAuth - Session
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// NextAuth - Verification Token
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Student Verification - School email verification for safety
+model StudentVerification {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  schoolEmail        String    @unique
+  schoolName         String
+  verificationStatus String    @default("pending") // pending, verified, rejected
+  verificationCode   String?
+  verifiedAt         DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([schoolEmail])
+  @@index([verificationStatus])
+}
+
+// Guardian Link - Parent/Guardian connection for safety monitoring
+model GuardianLink {
+  id                  String   @id @default(cuid())
+  studentId           String
+  guardianEmail       String
+  guardianName        String
+  relationship        String // parent, guardian, teacher
+  accessLevel         String   @default("basic") // basic, full, admin
+  weeklyReportEnabled Boolean  @default(true)
+  status              String   @default("pending") // pending, approved, rejected
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([studentId])
+  @@index([guardianEmail])
+}
+
+// Study Circle - Study groups for students
+model StudyCircle {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  subject     String
+  creatorId   String
+  members     String   @default("[]") // JSON array of userIds
+  isPublic    Boolean  @default(true)
+  maxMembers  Int      @default(20)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([subject])
+  @@index([creatorId])
+}
+
+// Peer Tutoring Session - Student-to-student tutoring
+model PeerTutoringSession {
+  id          String   @id @default(cuid())
+  tutorId     String
+  studentId   String
+  subject     String
+  scheduledAt DateTime
+  duration    Int      @default(30) // minutes
+  status      String   @default("scheduled") // scheduled, in_progress, completed, cancelled
+  notes       String?
+  rating      Int? // 1-5 stars
+  feedback    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tutorId])
+  @@index([studentId])
+  @@index([status])
+}
+
+// Character Badge - Moral and academic character badges
+model CharacterBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeType String // helper, leader, honest, resilient, kind, scholar, mentor
+  level     Int      @default(1) // 1-5 levels
+  earnedAt  DateTime @default(now())
+  metadata  String   @default("{}") // JSON for additional badge data
+
+  @@unique([userId, badgeType])
+  @@index([userId])
+}
+
+// Mood Check-in - Daily wellness tracking
+model MoodCheckIn {
+  id        String   @id @default(cuid())
+  userId    String
+  mood      Int // 1-5 scale (1=bad, 5=great)
+  notes     String?
+  tags      String   @default("[]") // JSON array: ["stressed", "happy", etc.]
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Content Report - Safety reporting system
+model ContentReport {
+  id              String   @id @default(cuid())
+  reporterId      String
+  reportedUserId  String?
+  contentType     String // post, comment, message, profile
+  contentId       String?
+  reportedContent String // The actual reported content
+  reason          String // harassment, inappropriate, spam, bullying, other
+  description     String?
+  status          String   @default("pending") // pending, reviewed, resolved, dismissed
+  reviewedBy      String?
+  reviewNotes     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([reporterId])
+  @@index([status])
+}
+
+// Wellness Settings - User wellness preferences
+model WellnessSettings {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  screenTimeLimit    Int? // minutes per day
+  focusModeEnabled   Boolean  @default(false)
+  focusModeSchedule  String? // JSON for schedule
+  sleepReminderTime  String? // "22:00" format
+  breakReminders     Boolean  @default(true)
+  mindfulnessPrompts Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Screen Time Log - Daily usage tracking
+model ScreenTimeLog {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @default(now())
+  minutes   Int      @default(0)
+  sessions  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, date])
+  @@index([userId])
+}
+
+// Community Service Log - Character development tracking
+model CommunityServiceLog {
+  id          String   @id @default(cuid())
+  userId      String
+  activity    String
+  description String?
+  hours       Float // Can be partial hours
+  date        DateTime
+  verified    Boolean  @default(false)
+  verifiedBy  String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+// Reflection Journal - Private journaling for students
+model ReflectionJournal {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?
+  content   String
+  mood      Int? // 1-5 scale
+  isPrivate Boolean  @default(true)
+  tags      String   @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Goal - Personal goals tracking
+model Goal {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  category    String // academic, character, wellness, social
+  targetDate  DateTime?
+  status      String    @default("active") // active, completed, abandoned
+  progress    Int       @default(0) // 0-100 percentage
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// Blocked User - Safety blocking feature
+model BlockedUser {
+  id        String   @id @default(cuid())
+  blockerId String
+  blockedId String
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+}
+
+// Moderation Log - AI content moderation tracking
+model ModerationLog {
+  id           String   @id @default(cuid())
+  userId       String
+  targetUserId String?
+  content      String
+  category     String   @default("safe") // safe, bullying, harassment, hate_speech, etc.
+  severity     Int      @default(0) // 0-4
+  isSafe       Boolean  @default(true)
+  confidence   Float    @default(1.0)
+  context      String   @default("chat") // chat, profile, post, comment
+  action       String   @default("allowed") // allowed, warned, blocked
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([category])
+  @@index([createdAt])
+}
+
+// Safety Report - Enhanced safety reporting
+model SafetyReport {
+  id             String    @id @default(cuid())
+  reporterId     String // Can be 'system' for auto-generated
+  reportedUserId String?
+  type           String // content_violation, behavior, harassment, other
+  category       String? // bullying, harassment, inappropriate, etc.
+  description    String
+  content        String? // The reported content
+  status         String    @default("pending") // pending, under_review, resolved, dismissed
+  priority       String    @default("normal") // low, normal, high, critical
+  assignedTo     String? // Admin assigned to review
+  resolution     String?
+  resolvedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([reporterId])
+  @@index([reportedUserId])
+  @@index([status])
+  @@index([priority])
+}
+
+// Safety Badge - Gamified safety achievements
+model SafetyBadge {
+  id            String   @id @default(cuid())
+  userId        String
+  badgeType     String // safe_chatter, kind_friend, helper, reporter, guardian_approved
+  level         Int      @default(1) // 1-5
+  points        Int      @default(0)
+  metadata      String   @default("{}") // JSON for badge-specific data
+  earnedAt      DateTime @default(now())
+  lastUpdatedAt DateTime @updatedAt
+
+  @@unique([userId, badgeType])
+  @@index([userId])
+  @@index([badgeType])
+}
+
+// Positive Behavior Log - Track good behavior for gamification
+model PositiveBehaviorLog {
+  id          String   @id @default(cuid())
+  userId      String
+  behavior    String // helpful_response, kind_message, good_sportsmanship, reported_issue
+  description String?
+  points      Int      @default(1)
+  metadata    String   @default("{}")
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([behavior])
+}
+
+// Parent Onboarding - Track parent setup progress
+model ParentOnboarding {
+  id                   String    @id @default(cuid())
+  guardianEmail        String    @unique
+  guardianName         String
+  studentId            String?
+  relationship         String    @default("parent") // parent, guardian, teacher
+  setupCompleted       Boolean   @default(false)
+  currentStep          Int       @default(1) // 1-5 steps
+  preferencesSet       Boolean   @default(false)
+  linkedStudent        Boolean   @default(false)
+  weeklyReportsEnabled Boolean   @default(true)
+  alertPreferences     String    @default("{}") // JSON for alert settings
+  invitedAt            DateTime  @default(now())
+  completedAt          DateTime?
+
+  @@index([guardianEmail])
+  @@index([studentId])
+}
+
+// School Partnership - Schools using EduSparring
+model SchoolPartner {
+  id            String    @id @default(cuid())
+  schoolName    String
+  schoolEmail   String    @unique
+  schoolType    String    @default("secondary") // primary, secondary, university
+  country       String
+  adminName     String
+  adminEmail    String
+  studentCount  Int       @default(0)
+  status        String    @default("pending") // pending, trial, active, suspended
+  plan          String    @default("trial") // trial, basic, premium, enterprise
+  features      String    @default("{}") // JSON for enabled features
+  contractStart DateTime?
+  contractEnd   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status])
+  @@index([country])
+}
+
+// School Student - Students linked to school accounts
+model SchoolStudent {
+  id         String   @id @default(cuid())
+  schoolId   String
+  userId     String
+  studentId  String? // School's student ID
+  grade      String?
+  classGroup String?
+  status     String   @default("active") // active, graduated, transferred
+  linkedAt   DateTime @default(now())
+
+  @@unique([schoolId, userId])
+  @@index([schoolId])
+}
+
+// Mock Job Program - Career exploration for high-achieving students
+model MockJobPosition {
+  id           String    @id @default(cuid())
+  title        String
+  description  String
+  company      String
+  companyId    String? // Link to employer account
+  industry     String // technology, healthcare, finance, education, engineering, etc.
+  department   String? // engineering, marketing, research, operations, etc.
+  location     String
+  remote       Boolean   @default(false)
+  duration     Int       @default(14) // days
+  startDate    DateTime?
+  endDate      DateTime?
+  spots        Int       @default(1) // Number of positions available
+  filled       Int       @default(0) // Number of positions filled
+  compensation Float // Full payment amount
+  currency     String    @default("USD")
+
+  // Qualification requirements
+  minKR            Int    @default(1200) // Minimum Knowledge Rating
+  requiredBadges   String @default("[]") // JSON array of required safety/character badges
+  requiredSubjects String @default("[]") // JSON array of required subject proficiency
+  minWins          Int    @default(10)
+  minWinRate       Float  @default(0.6) // 60% win rate
+
+  // Status
+  status              String    @default("draft") // draft, published, closed, completed
+  featured            Boolean   @default(false)
+  applicationDeadline DateTime?
+
+  // Metadata
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+
+  applications MockJobApplication[]
+  reviews      MockJobReview[]
+
+  @@index([status])
+  @@index([industry])
+  @@index([companyId])
+}
+
+// Mock Job Application
+model MockJobApplication {
+  id          String  @id @default(cuid())
+  positionId  String
+  studentId   String
+  status      String  @default("pending") // pending, reviewed, accepted, rejected, completed
+  coverLetter String?
+  portfolio   String? // Link to portfolio or achievements
+
+  // Qualification snapshot at time of application
+  krAtApplication     Int
+  badgesAtApplication String @default("[]")
+  winsAtApplication   Int
+
+  // Review
+  reviewedAt  DateTime?
+  reviewedBy  String?
+  reviewNotes String?
+
+  // Employer feedback
+  employerRating   Int? // 1-5 stars
+  employerFeedback String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  position  MockJobPosition   @relation(fields: [positionId], references: [id])
+  placement MockJobPlacement?
+
+  @@unique([positionId, studentId])
+  @@index([studentId])
+  @@index([status])
+}
+
+// Mock Job Placement - Confirmed placements
+model MockJobPlacement {
+  id            String @id @default(cuid())
+  applicationId String @unique
+  studentId     String
+  positionId    String
+
+  // Placement details
+  actualStartDate DateTime?
+  actualEndDate   DateTime?
+  status          String    @default("scheduled") // scheduled, in_progress, completed, cancelled
+
+  // Work log
+  workLog String @default("[]") // JSON array of daily activities
+
+  // Completion
+  completedAt    DateTime?
+  certificateUrl String? // Link to completion certificate
+
+  // Payment tracking
+  paymentStatus String    @default("pending") // pending, paid
+  paymentDate   DateTime?
+  paymentAmount Float?
+
+  // Review
+  reviewSubmitted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  application MockJobApplication @relation(fields: [applicationId], references: [id])
+  review      MockJobReview?
+
+  @@index([studentId])
+  @@index([status])
+}
+
+// Mock Job Review - Student reviews of their experience
+model MockJobReview {
+  id          String @id @default(cuid())
+  positionId  String
+  studentId   String
+  placementId String @unique
+
+  // Ratings (1-5)
+  overallRating    Int
+  learningRating   Int // How much they learned
+  cultureRating    Int // Company culture
+  mentorshipRating Int? // Quality of mentorship
+  recommendRating  Int // Would recommend to others
+
+  // Review content
+  title  String
+  review String // Full review text
+  pros   String? // What they liked
+  cons   String? // What could be improved
+
+  // Career impact
+  careerConfirmed Boolean? // Did this confirm their career choice?
+  careerChanged   Boolean? // Did this change their career direction?
+  newInterests    String   @default("[]") // JSON array of newly discovered interests
+
+  // Status
+  anonymous Boolean @default(false)
+  status    String  @default("published") // draft, published, hidden
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  position  MockJobPosition  @relation(fields: [positionId], references: [id])
+  placement MockJobPlacement @relation(fields: [placementId], references: [id])
+
+  @@index([positionId])
+  @@index([studentId])
+}
+
+// Employer Partner - Organizations offering mock jobs
+model EmployerPartner {
+  id          String  @id @default(cuid())
+  companyName String
+  logo        String?
+  industry    String
+  description String?
+  website     String?
+  location    String
+  country     String
+
+  // Contact
+  contactName  String
+  contactEmail String
+  contactPhone String?
+
+  // Partnership
+  status   String   @default("pending") // pending, approved, suspended
+  tier     String   @default("standard") // standard, premium, enterprise
+  joinedAt DateTime @default(now())
+
+  // Stats
+  totalPositions  Int   @default(0)
+  totalPlacements Int   @default(0)
+  avgRating       Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyName])
+  @@index([status])
+  @@index([industry])
+}
+
+// Student Career Profile
+model StudentCareerProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // Career interests
+  interests         String @default("[]") // JSON array of career interests
+  desiredIndustries String @default("[]")
+  desiredRoles      String @default("[]")
+
+  // Skills self-assessment
+  technicalSkills String @default("{}") // JSON object of skill: level (1-5)
+  softSkills      String @default("{}")
+
+  // Experience
+  pastPlacements  String @default("[]") // JSON array of completed placement IDs
+  totalPlacements Int    @default(0)
+  totalEarnings   Float  @default(0)
+
+  // Preferences
+  preferredLocations String  @default("[]")
+  openToRemote       Boolean @default(true)
+  availablePeriods   String  @default("[]") // JSON array of available date ranges
+
+  // Career discovery
+  discoveredInterests String @default("[]") // Newly discovered interests from placements
+  confirmedInterests  String @default("[]") // Confirmed career interests
+
+  // Resume
+  resumeUrl String?
+  linkedIn  String?
+  portfolio String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Career Qualification - Track qualification progress
+model CareerQualification {
+  id     String @id @default(cuid())
+  userId String
+
+  // KR requirement
+  krCurrent   Int     @default(0)
+  krRequired  Int     @default(1200)
+  krQualified Boolean @default(false)
+
+  // Badge requirements
+  requiredBadges  String  @default("[]") // JSON array
+  earnedBadges    String  @default("[]")
+  badgesQualified Boolean @default(false)
+
+  // Win requirements
+  winsCurrent   Int     @default(0)
+  winsRequired  Int     @default(10)
+  winsQualified Boolean @default(false)
+
+  // Win rate requirement
+  winRateCurrent   Float   @default(0)
+  winRateRequired  Float   @default(0.6)
+  winRateQualified Boolean @default(false)
+
+  // Subject requirements
+  requiredSubjects  String  @default("[]")
+  qualifiedSubjects String  @default("[]")
+  subjectsQualified Boolean @default(false)
+
+  // Overall
+  fullyQualified Boolean   @default(false)
+  qualifiedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId])
+  @@index([fullyQualified])
+}
+
+// ============================================
+// MONETIZATION & SUBSCRIPTION MODELS
+// ============================================
+
+// User Subscription - Premium tiers
+model UserSubscription {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // Subscription details
+  plan   String @default("free") // free, scholar, champion, elite
+  status String @default("active") // active, canceled, expired, past_due
+
+  // Billing
+  price        Float  @default(0)
+  currency     String @default("USD")
+  billingCycle String @default("monthly") // monthly, yearly
+
+  // Stripe/Payment integration
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  stripePriceId        String?
+
+  // Dates
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  canceledAt         DateTime?
+
+  // Trial
+  trialStart DateTime?
+  trialEnd   DateTime?
+  trialed    Boolean   @default(false)
+
+  // Stats
+  totalPaid     Float @default(0)
+  paymentsCount Int   @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([plan])
+}
+
+// Payment Transaction
+model PaymentTransaction {
+  id     String @id @default(cuid())
+  userId String
+
+  // Transaction details
+  amount   Float
+  currency String @default("USD")
+  status   String @default("pending") // pending, completed, failed, refunded
+
+  // Stripe
+  stripePaymentIntentId String?
+  stripeChargeId        String?
+
+  // Metadata
+  description String?
+  metadata    String  @default("{}") // JSON for additional data
+
+  // Refund
+  refunded     Boolean   @default(false)
+  refundedAt   DateTime?
+  refundAmount Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Institutional Partner - Schools, Universities, Governments
+model InstitutionalPartner {
+  id String @id @default(cuid())
+
+  // Organization info
+  name    String
+  type    String // school, university, government, ministry, exam_board
+  country String
+  region  String?
+
+  // Contact
+  adminName  String
+  adminEmail String
+  adminPhone String?
+  website    String?
+
+  // Partnership
+  partnershipType String @default("standard") // trial, standard, premium, enterprise
+  status          String @default("pending") // pending, active, suspended, ended
+
+  // Contract
+  contractStart DateTime?
+  contractEnd   DateTime?
+  contractValue Float?
+  currency      String    @default("USD")
+
+  // Features
+  features         String  @default("{}") // JSON for enabled features
+  customBranding   Boolean @default(false)
+  apiAccess        Boolean @default(false)
+  dedicatedSupport Boolean @default(false)
+
+  // Students
+  studentLimit Int?
+  studentCount Int  @default(0)
+
+  // Exam administration
+  canAdministerExams Boolean @default(false)
+  examTypes          String  @default("[]") // JSON array: ["internal", "regional", "national"]
+  examsAdministered  Int     @default(0)
+
+  // Verification
+  verified   Boolean   @default(false)
+  verifiedAt DateTime?
+  verifiedBy String?
+
+  // Stats
+  totalRevenue Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, country])
+  @@index([status])
+  @@index([type])
+  @@index([country])
+}
+
+// Exam Administration - Public/Private exams
+model ExamAdministration {
+  id        String @id @default(cuid())
+  partnerId String
+
+  // Exam details
+  name    String
+  code    String?
+  type    String // internal, regional, national, international
+  subject String?
+
+  // Schedule
+  scheduledDate     DateTime
+  duration          Int // minutes
+  registrationStart DateTime?
+  registrationEnd   DateTime?
+
+  // Participants
+  registeredCount  Int  @default(0)
+  participantLimit Int?
+
+  // Security
+  proctoringEnabled Boolean @default(true)
+  lockdownBrowser   Boolean @default(true)
+  ipRestriction     Boolean @default(false)
+  allowedIps        String  @default("[]") // JSON array
+
+  // Question source
+  questionSource String  @default("platform") // platform, custom, hybrid
+  questionSetId  String?
+
+  // Results
+  resultsPublished   Boolean   @default(false)
+  resultsPublishedAt DateTime?
+  passRate           Float?
+  averageScore       Float?
+
+  // Status
+  status String @default("draft") // draft, registration, closed, in_progress, grading, completed
+
+  // Fee (if students pay)
+  examFee     Float?
+  feeCurrency String @default("USD")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([partnerId])
+  @@index([status])
+  @@index([scheduledDate])
+}
+
+// Exam Result - Individual exam results
+model ExamResult {
+  id        String @id @default(cuid())
+  examId    String
+  studentId String
+
+  // Scores
+  score      Float
+  maxScore   Float
+  percentage Float
+  grade      String?
+  rank       Int?
+
+  // Details
+  answers   String @default("{}") // JSON for answers
+  timeTaken Int? // seconds
+
+  // Verification
+  certificateUrl   String?
+  verified         Boolean @default(false)
+  verificationCode String? @unique
+
+  // Status
+  status String @default("graded") // pending, graded, appealed, verified
+
+  createdAt DateTime @default(now())
+
+  @@unique([examId, studentId])
+  @@index([examId])
+  @@index([studentId])
+}
+
+// Platform Trust & Certification
+model PlatformCertification {
+  id String @id @default(cuid())
+
+  // Certification info
+  name      String
+  authority String // e.g., "ISO", "GDPR", "FERPA", "COPPA"
+  type      String // security, privacy, education, accessibility
+
+  // Validity
+  issuedAt       DateTime
+  expiresAt      DateTime?
+  certificateUrl String?
+  badgeUrl       String?
+
+  // Display
+  displayOnSite Boolean @default(true)
+  displayOrder  Int     @default(0)
+
+  // Description
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, authority])
+  @@index([displayOnSite])
+}
+
+// Feature Flag for Premium Features
+model PremiumFeature {
+  id String @id @default(cuid())
+
+  // Feature info
+  name        String  @unique
+  displayName String
+  description String?
+
+  // Access control
+  minPlan         String  @default("free") // free, scholar, champion, elite
+  institutionOnly Boolean @default(false)
+
+  // Limits (for free tier)
+  freeLimit  Int? // null = unlimited, 0 = not available
+  freePeriod String? // daily, weekly, monthly
+
+  // Status
+  active Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([minPlan])
+  @@index([active])
+}
+
+// ============================================
+// DAILY STREAK & QUEST SYSTEM
+// ============================================
+
+// Daily Streak - Track consecutive logins
+model DailyStreak {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // Streak tracking
+  currentStreak Int       @default(0)
+  bestStreak    Int       @default(0)
+  lastLoginDate DateTime?
+
+  // Rewards
+  totalRewards Int @default(0) // Total points earned from streaks
+  streakFreeze Int @default(0) // Number of freeze tokens available
+
+  // Milestones
+  milestones String @default("[]") // JSON array of achieved milestones [7, 14, 30, 60, 90, 180, 365]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([currentStreak])
+}
+
+// Daily Quest - Daily challenges for engagement
+model DailyQuest {
+  id     String @id @default(cuid())
+  userId String
+
+  // Quest details
+  questType   String // win_matches, answer_correct, help_student, study_time, etc.
+  title       String
+  description String?
+
+  // Progress
+  target    Int // Number to complete (e.g., win 3 matches)
+  progress  Int     @default(0)
+  completed Boolean @default(false)
+  claimed   Boolean @default(false) // Whether user claimed the reward
+
+  // Rewards
+  pointsReward Int     @default(10)
+  bonusReward  String? // JSON for special rewards (streak freeze, badge, etc.)
+
+  // Timing
+  date      DateTime // The date this quest is for
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, questType, date])
+  @@index([userId])
+  @@index([date])
+  @@index([completed])
+}
+
+// Login Bonus - Daily login rewards
+model LoginBonus {
+  id     String @id @default(cuid())
+  userId String
+
+  // Bonus details
+  dayNumber Int // Day 1, 2, 3... up to 7 (then cycles)
+
+  // Rewards given
+  pointsGiven Int
+  bonusGiven  String @default("{}") // JSON for special bonuses
+
+  // Timestamp
+  claimedAt DateTime @default(now())
+
+  @@unique([userId, dayNumber, claimedAt])
+  @@index([userId])
+}
+
+// Achievement - Unlockable achievements
+model AchievementDefinition {
+  id String @id @default(cuid())
+
+  // Achievement info
+  name        String @unique
+  displayName String
+  description String
+  icon        String // Emoji or icon name
+
+  // Category
+  category String // learning, social, competitive, career, streak
+
+  // Requirements
+  requirement  String // JSON describing requirement (e.g., {"type": "wins", "count": 100})
+  pointsReward Int    @default(0)
+
+  // Display
+  rarity       String  @default("common") // common, rare, epic, legendary
+  hidden       Boolean @default(false) // Hidden until unlocked
+  displayOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([rarity])
+}
+
+// User Achievement - User's unlocked achievements
+model UserAchievementProgress {
+  id            String @id @default(cuid())
+  userId        String
+  achievementId String
+
+  // Progress
+  progress   Int       @default(0)
+  target     Int
+  unlocked   Boolean   @default(false)
+  unlockedAt DateTime?
+
+  // Display
+  featured Boolean @default(false) // Featured on profile
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([unlocked])
+}
+
+// ============================================
+// ENHANCED GAMIFICATION MODELS
+// ============================================
+
+// Season Pass - Battle pass style reward system
+model SeasonPass {
+  id       String @id @default(cuid())
+  seasonId String @unique
+
+  // Season info
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  status      String   @default("upcoming") // upcoming, active, ended
+
+  // Pass tiers
+  freeTiers    String @default("[]") // JSON array of free tier rewards
+  premiumTiers String @default("[]") // JSON array of premium tier rewards
+  totalTiers   Int    @default(50)
+
+  // Pricing
+  premiumPrice Float  @default(9.99)
+  currency     String @default("USD")
+
+  // Stats
+  totalXpRequired  Int @default(10000) // Total XP to complete pass
+  participantCount Int @default(0)
+  premiumPurchases Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([startDate])
+}
+
+// User Season Pass Progress
+model UserSeasonPass {
+  id           String @id @default(cuid())
+  userId       String
+  seasonPassId String
+
+  // Progress
+  currentXp   Int @default(0)
+  currentTier Int @default(1)
+  maxXp       Int @default(10000)
+
+  // Premium status
+  isPremium          Boolean   @default(false)
+  premiumPurchasedAt DateTime?
+
+  // Claimed rewards
+  freeRewardsClaimed    String @default("[]") // JSON array of claimed tier numbers
+  premiumRewardsClaimed String @default("[]")
+
+  // Stats
+  matchesPlayed   Int @default(0)
+  questsCompleted Int @default(0)
+  perfectDays     Int @default(0) // Days with all daily quests completed
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, seasonPassId])
+  @@index([userId])
+  @@index([seasonPassId])
+}
+
+// Spin Wheel Prize
+model SpinWheelPrize {
+  id          String @id @default(cuid())
+  name        String
+  type        String // points, streak_freeze, badge, cosmetic, premium_day, bonus_xp, mystery_box
+  value       Int // Amount/quantity
+  rarity      String @default("common") // common, uncommon, rare, epic, legendary
+  probability Float // Chance weight (relative)
+  icon        String // Emoji or icon identifier
+  color       String // Gradient colors (JSON)
+
+  // Limits
+  dailyLimit   Int?
+  totalLimit   Int?
+  currentGiven Int  @default(0)
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([rarity])
+}
+
+// User Spin History
+model UserSpinHistory {
+  id      String @id @default(cuid())
+  userId  String
+  prizeId String
+
+  // Prize details snapshot
+  prizeName   String
+  prizeType   String
+  prizeValue  Int
+  prizeRarity String
+
+  // Spin details
+  isDailySpin   Boolean @default(true) // Daily free spin vs purchased
+  isPremiumSpin Boolean @default(false) // Premium users get better odds
+
+  claimed   Boolean   @default(false)
+  claimedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Daily Spin State
+model UserDailySpin {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  freeSpins         Int       @default(1)
+  premiumSpins      Int       @default(0)
+  lastFreeSpinAt    DateTime?
+  lastPremiumSpinAt DateTime?
+  consecutiveDays   Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Enhanced Achievement Categories
+model AchievementCategory {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  displayName String
+  description String?
+  icon        String
+  color       String
+  order       Int     @default(0)
+
+  achievements Achievement[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// User XP Transaction Log
+model XpTransaction {
+  id     String @id @default(cuid())
+  userId String
+
+  amount      Int // Positive for earned, negative for spent
+  source      String // match_win, match_loss, quest, daily_login, spin_wheel, season_pass, achievement, referral
+  description String?
+
+  // Related entity
+  relatedId   String?
+  relatedType String? // match, quest, achievement, etc.
+
+  balanceAfter Int // User's XP balance after transaction
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([source])
+  @@index([createdAt])
+}
+
+// User Cosmetic Items (Titles, Avatars, Effects)
+model UserCosmetic {
+  id     String @id @default(cuid())
+  userId String
+
+  itemType String // title, avatar_frame, effect, badge_border, card_back
+  itemId   String
+  itemName String
+  rarity   String
+  source   String // season_pass, achievement, spin_wheel, purchase, event
+
+  equipped   Boolean   @default(false)
+  equippedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, itemType, itemId])
+  @@index([userId])
+  @@index([itemType])
+}
