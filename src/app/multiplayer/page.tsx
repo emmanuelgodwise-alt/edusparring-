@@ -15,6 +15,7 @@ import { TournamentsList } from '@/components/multiplayer/Tournament';
 import { LiveMatchList } from '@/components/multiplayer/SpectatorMode';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
+import { GlobalSearch, SearchTrigger, useGlobalSearch } from '@/components/navigation';
 import type { LiveBattle } from '@/types/multiplayer';
 
 export default function MultiplayerPage() {
@@ -23,6 +24,7 @@ export default function MultiplayerPage() {
   const [selectedSubject, setSelectedSubject] = useState('Math');
   const [inMatch, setInMatch] = useState(false);
   const [currentBattle, setCurrentBattle] = useState<LiveBattle | null>(null);
+  const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
 
   // Mock live battles for display
   const liveBattles: LiveBattle[] = [
@@ -127,6 +129,7 @@ export default function MultiplayerPage() {
 
           {/* Stats */}
           <div className="flex items-center gap-4">
+            <SearchTrigger onClick={openSearch} />
             <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
               <Crown className="w-4 h-4 text-yellow-400" />
               <span className="text-sm font-medium">850 KR</span>
@@ -244,6 +247,9 @@ export default function MultiplayerPage() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Global Search */}
+      <GlobalSearch isOpen={searchOpen} onClose={closeSearch} />
     </div>
   );
 }

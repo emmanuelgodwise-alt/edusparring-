@@ -18,6 +18,7 @@ import { RecommendationsDisplay, RecommendationsWidget } from '@/components/ai/R
 import { AdaptiveDifficultyDisplay, useAdaptiveDifficulty } from '@/components/ai/AdaptiveDifficulty';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
+import { GlobalSearch, SearchTrigger, useGlobalSearch } from '@/components/navigation';
 
 // Bot difficulty settings
 const BOT_DIFFICULTIES = {
@@ -77,6 +78,7 @@ export default function AITutorPage() {
   const { user, isAuthenticated } = useAuth();
   const [selectedSubject, setSelectedSubject] = useState('Math');
   const [activeTab, setActiveTab] = useState('tutor');
+  const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
 
   const { difficulty, performance, adjustmentReason } = useAdaptiveDifficulty(
     user?.id || 'guest',
@@ -251,6 +253,7 @@ export default function AITutorPage() {
               <option value="History">History</option>
               <option value="Geography">Geography</option>
             </select>
+            <SearchTrigger onClick={openSearch} />
           </div>
         </div>
       </header>
@@ -744,6 +747,9 @@ export default function AITutorPage() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Global Search */}
+      <GlobalSearch isOpen={searchOpen} onClose={closeSearch} />
     </div>
   );
 }

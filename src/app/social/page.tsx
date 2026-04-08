@@ -18,6 +18,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { GlobalSearch, SearchTrigger, useGlobalSearch } from '@/components/navigation';
 
 // Demo data
 const DEMO_USER = {
@@ -105,6 +106,7 @@ export default function SocialHubPage() {
   const [friends, setFriends] = useState(DEMO_FRIENDS);
   const [activities, setActivities] = useState(DEMO_ACTIVITIES);
   const [searchQuery, setSearchQuery] = useState('');
+  const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
 
   const onlineFriends = friends.filter(f => f.status === 'online').length;
 
@@ -137,6 +139,7 @@ export default function SocialHubPage() {
                 ✓ Verified
               </Badge>
             )}
+            <SearchTrigger onClick={openSearch} />
             <Button variant="ghost" size="icon" className="relative text-gray-400">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
@@ -513,6 +516,9 @@ export default function SocialHubPage() {
           </div>
         </div>
       </nav>
+
+      {/* Global Search */}
+      <GlobalSearch isOpen={searchOpen} onClose={closeSearch} />
     </div>
   );
 }

@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CountrySelector } from '@/components/ui/LanguageSelector';
 import Link from 'next/link';
+import { GlobalSearch, SearchTrigger, useGlobalSearch } from '@/components/navigation';
 
 // Country flag mapping
 const FLAGS: Record<string, string> = {
@@ -52,6 +53,7 @@ export default function GlobalLeaderboardPage() {
   const [selectedSubject, setSelectedSubject] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
 
   // Filter leaderboard
   const filteredLeaderboard = leaderboard.filter(player => {
@@ -88,19 +90,22 @@ export default function GlobalLeaderboardPage() {
                   <ArrowLeft className="w-5 h-5" />
                 </Button>
               </Link>
-              <div className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2">
                 <Globe className="w-6 h-6 text-purple-400" />
                 <div>
                   <h1 className="text-lg font-bold">Global Leaderboard</h1>
                   <p className="text-xs text-gray-400">Top players worldwide</p>
                 </div>
-              </div>
+              </Link>
             </div>
 
-            <CountrySelector 
-              currentCountry={selectedCountry}
-              onCountryChange={(c) => setSelectedCountry(c)}
-            />
+            <div className="flex items-center gap-3">
+              <SearchTrigger onClick={openSearch} />
+              <CountrySelector 
+                currentCountry={selectedCountry}
+                onCountryChange={(c) => setSelectedCountry(c)}
+              />
+            </div>
           </div>
         </div>
       </header>
@@ -288,6 +293,9 @@ export default function GlobalLeaderboardPage() {
           </Card>
         </div>
       </main>
+
+      {/* Global Search */}
+      <GlobalSearch isOpen={searchOpen} onClose={closeSearch} />
     </div>
   );
 }

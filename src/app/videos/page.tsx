@@ -17,6 +17,7 @@ import { VideoPlayer, VideoCard } from '@/components/video/VideoPlayer';
 import { LiveClassViewer, LiveClassCard, LiveClassHost } from '@/components/video/LiveClass';
 import type { Video as VideoType, LiveClass as LiveClassType, VideoFilter } from '@/types/video';
 import Link from 'next/link';
+import { GlobalSearch, SearchTrigger, useGlobalSearch } from '@/components/navigation';
 
 // Mock data
 const mockVideos: VideoType[] = [
@@ -192,6 +193,7 @@ export default function VideosPage() {
   const [filters, setFilters] = useState<VideoFilter>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [activeTab, setActiveTab] = useState('all');
+  const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
 
   const filteredVideos = videos.filter(video => {
     if (searchQuery) {
@@ -230,6 +232,7 @@ export default function VideosPage() {
           </Link>
 
           <div className="flex items-center gap-3">
+            <SearchTrigger onClick={openSearch} />
             <Link href="/">
               <Button variant="ghost" className="text-gray-300 hover:text-white">
                 Back to Home
@@ -576,6 +579,9 @@ export default function VideosPage() {
           </ScrollArea>
         </section>
       </main>
+
+      {/* Global Search */}
+      <GlobalSearch isOpen={searchOpen} onClose={closeSearch} />
     </div>
   );
 }

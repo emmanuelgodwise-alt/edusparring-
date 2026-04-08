@@ -26,6 +26,7 @@ import Link from 'next/link';
 import { StreakDisplay, DailyQuests, SeasonPass, SpinWheel, SpinWheelButton, SeasonPassCompact } from '@/components/gamification';
 import { VideoWidget, VideoSuggestions } from '@/components/video';
 import { AITutorWidget } from '@/components/ai';
+import { GlobalSearch, SearchTrigger, useGlobalSearch } from '@/components/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -313,6 +314,7 @@ export default function Home() {
   } = useAppStore();
 
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+  const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
 
   // Immediately set loading to false on mount - show content right away
   // This ensures the landing page is visible even if auth is slow
@@ -572,6 +574,9 @@ export default function Home() {
                 </motion.button>
               )}
               
+              {/* Global Search Trigger */}
+              <SearchTrigger onClick={openSearch} />
+              
               <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
                 <Trophy className="w-4 h-4 text-yellow-400" />
                 <span className="text-sm font-medium">{user.points.toLocaleString()}</span>
@@ -610,6 +615,12 @@ export default function Home() {
                   <DropdownMenuItem onClick={() => setActiveTab('settings')} className="text-gray-300 cursor-pointer hover:bg-white/10">
                     <Settings className="w-4 h-4 mr-2" />
                     Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="text-gray-300 cursor-pointer hover:bg-white/10">
+                    <Link href="/onboarding" className="flex items-center w-full">
+                      <HelpCircle className="w-4 h-4 mr-2" />
+                      View Onboarding
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-white/10" />
                   <DropdownMenuItem onClick={handleSignOut} className="text-red-400 cursor-pointer hover:bg-red-500/10">
@@ -712,6 +723,9 @@ export default function Home() {
           <FriendsModal onClose={() => setShowFriendsModal(false)} />
         )}
       </AnimatePresence>
+
+      {/* Global Search */}
+      <GlobalSearch isOpen={searchOpen} onClose={closeSearch} />
     </div>
   );
 

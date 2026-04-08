@@ -6,7 +6,7 @@ import {
   Send, Bot, User, ChevronRight, CheckCircle2, XCircle,
   Brain, MessageCircle, Sparkles, Trophy, RotateCcw, HelpCircle,
   Zap, Target, BookOpen, Volume2, Star, TrendingUp, VolumeX, History,
-  Users, Globe, Swords
+  Users, Globe, Swords, ArrowLeft
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,7 @@ import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import soundManager from '@/lib/sound-manager';
+import { GlobalSearch, SearchTrigger, useGlobalSearch } from '@/components/navigation';
 
 // Types
 type SparringTurn = 'player_ask' | 'system_ask' | 'player_answer' | 'coaching' | 'ended';
@@ -84,6 +85,7 @@ export default function SparringArena() {
   const router = useRouter();
   const [showModeSelect, setShowModeSelect] = useState(true);
   const [selectedMode, setSelectedMode] = useState<'bot' | 'player' | null>(null);
+  const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
   const [state, setState] = useState<SparringState>({
     turn: 'player_ask',
     roundNumber: 1,
@@ -293,6 +295,12 @@ export default function SparringArena() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white p-6">
         <div className="max-w-2xl mx-auto pt-10">
+          {/* Back to Home */}
+          <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-4">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Link>
+          
           {/* Hero with Brand Positioning */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
             {/* Logo */}
@@ -382,6 +390,9 @@ export default function SparringArena() {
             </Link>
           </div>
         </div>
+
+        {/* Global Search */}
+        <GlobalSearch isOpen={searchOpen} onClose={closeSearch} />
       </div>
     );
   }
@@ -391,7 +402,10 @@ export default function SparringArena() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white p-6">
         <div className="max-w-2xl mx-auto pt-10">
-          <Button variant="ghost" onClick={() => { setShowModeSelect(true); setShowSubjectSelect(false); }} className="mb-4 text-gray-400 hover:text-white">← Back to Mode Selection</Button>
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="ghost" onClick={() => { setShowModeSelect(true); setShowSubjectSelect(false); }} className="text-gray-400 hover:text-white">← Back to Mode Selection</Button>
+            <SearchTrigger onClick={openSearch} />
+          </div>
           <Card className="bg-white/5 border-white/10 backdrop-blur mb-6">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-purple-400" />Choose Your Subject</CardTitle>
@@ -425,6 +439,9 @@ export default function SparringArena() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Global Search */}
+        <GlobalSearch isOpen={searchOpen} onClose={closeSearch} />
       </div>
     );
   }
@@ -543,6 +560,9 @@ export default function SparringArena() {
           )}
         </div>
       </div>
+
+      {/* Global Search */}
+      <GlobalSearch isOpen={searchOpen} onClose={closeSearch} />
     </div>
   );
 }

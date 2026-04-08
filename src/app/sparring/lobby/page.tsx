@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MultilingualChat, type TranslatedMessage, type LanguagePreference } from '@/components/chat/MultilingualChat';
 import { type LanguageCode, SUPPORTED_LANGUAGES, getLanguageFlag, getLanguageNativeName } from '@/lib/translation';
+import { GlobalSearch, SearchTrigger, useGlobalSearch } from '@/components/navigation';
 
 // Country flags and names
 const countryFlags: Record<string, string> = {
@@ -213,6 +214,7 @@ export default function SparringLobbyPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isConnected] = useState(true);
   const [currentUserId] = useState('current-user');
+  const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
   
   // Language preference state
   const [languagePref, setLanguagePref] = useState<LanguagePreference>({
@@ -357,6 +359,7 @@ export default function SparringLobbyPage() {
                 <Users className="w-3 h-3 mr-1" />
                 {mockPartners.filter(p => p.online).length} Online
               </Badge>
+              <SearchTrigger onClick={openSearch} />
             </div>
           </div>
         </header>
@@ -701,6 +704,9 @@ export default function SparringLobbyPage() {
           </div>
         </main>
       </div>
+
+      {/* Global Search */}
+      <GlobalSearch isOpen={searchOpen} onClose={closeSearch} />
     </div>
   );
 }
