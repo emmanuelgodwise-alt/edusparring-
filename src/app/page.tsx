@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Trophy, Target, Zap, Users, BarChart3, User, Settings,
@@ -8,7 +9,7 @@ import {
   Play, Medal, TrendingUp, Award, Brain, BookOpen, Sparkles, Menu, X,
   Eye, Calendar, MapPin, Edit2, Save, Bell, Volume2, Vibrate, Moon, Sun,
   Shield, LogOut, HelpCircle, Info, ChevronDown, Heart, MessageCircle,
-  Globe, Lock, UserPlus, UserMinus, Search, Radio, Swords, ArrowRight, LogIn, UserCheck, Zap as ZapIcon, Video
+  Globe, Lock, UserPlus, UserMinus, Search, Radio, Swords, ArrowRight, LogIn, UserCheck, Zap as ZapIcon, Video, Bot
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -298,6 +299,7 @@ function LandingPage() {
 
 // Main App Component
 export default function Home() {
+  const router = useRouter();
   const { user: authUser, isAuthenticated, isLoading: authLoading } = useAuth();
   const {
     user, setUser, isLoading, setIsLoading, activeTab, setActiveTab,
@@ -309,6 +311,8 @@ export default function Home() {
     tournaments, setTournaments, liveMatches, setLiveMatches,
     showFriendsModal, setShowFriendsModal, friends, setFriends
   } = useAppStore();
+
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
 
   // Immediately set loading to false on mount - show content right away
   // This ensures the landing page is visible even if auth is slow
@@ -337,6 +341,12 @@ export default function Home() {
           const data = await res.json();
           if (data.success && data.user) {
             setUser(data.user);
+            
+            // Check onboarding status
+            if (!data.user.hasCompletedOnboarding) {
+              router.push('/onboarding');
+              return;
+            }
           } else {
             // Create basic user from auth data
             setUser({
@@ -357,6 +367,9 @@ export default function Home() {
               subjects: [],
               achievements: [],
             });
+            // New user - redirect to onboarding
+            router.push('/onboarding');
+            return;
           }
         } catch (error) {
           console.error('Failed to fetch user data:', error);
@@ -379,11 +392,15 @@ export default function Home() {
             subjects: [],
             achievements: [],
           });
+        } finally {
+          setCheckingOnboarding(false);
         }
       };
       fetchUserData();
+    } else {
+      setCheckingOnboarding(false);
     }
-  }, [isAuthenticated, authUser, setUser]);
+  }, [isAuthenticated, authUser, setUser, router]);
 
   // Initialize mock data
   useEffect(() => {
@@ -482,7 +499,7 @@ export default function Home() {
 
   // Show loading state only if we're still initializing
   // Don't wait for auth - show landing page quickly for better UX
-  if (isLoading) {
+  if (isLoading || (isAuthenticated && checkingOnboarding)) {
     return <LoadingScreen />;
   }
 
@@ -765,153 +782,169 @@ function LoadingScreen() {
   );
 }
 
-// Home Page Component
+// Home Page Component - Sparring Centered
 function HomePage({ onStartMatch, isSearching }: { onStartMatch: () => void; isSearching: boolean }) {
   const { user, selectedSubject, setSelectedSubject, tournaments, liveMatches } = useAppStore();
   const subjects = ['Math', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'];
 
   return (
     <div className="space-y-6 pb-20">
+      {/* Hero Section - Sparring Focused */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center py-6"
+        className="text-center py-4"
       >
         <motion.div
           animate={{ y: [0, -5, 0] }}
           transition={{ duration: 3, repeat: Infinity }}
-          className="mb-3"
+          className="mb-2"
         >
-          <Swords className="w-[72px] h-[72px] text-purple-400 mx-auto" />
+          <Swords className="w-16 h-16 text-purple-400 mx-auto" />
         </motion.div>
         
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent mb-2">
-          EduSparring
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent mb-1">
+          Ready to Spar?
         </h1>
         
-        <p className="text-base text-purple-300 font-medium mb-1">
-          A safe haven for students to connect worldwide
-        </p>
-        
         <p className="text-sm text-gray-400">
-          Practice lessons • Prepare for exams
+          Challenge the Bot or find a Student to battle!
         </p>
       </motion.div>
 
+      {/* User Stats */}
       {user && (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-3 text-center">
-              <Crown className="w-6 h-6 mx-auto mb-1 text-yellow-400" />
-              <p className="text-lg font-bold">{user.knowledgeRating}</p>
-              <p className="text-xs text-gray-400">KR Rating</p>
+            <CardContent className="p-2 text-center">
+              <Crown className="w-5 h-5 mx-auto mb-1 text-yellow-400" />
+              <p className="text-base font-bold">{user.knowledgeRating}</p>
+              <p className="text-[10px] text-gray-400">KR Rating</p>
             </CardContent>
           </Card>
           <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-3 text-center">
-              <Target className="w-6 h-6 mx-auto mb-1 text-green-400" />
-              <p className="text-lg font-bold">{user.totalWins}</p>
-              <p className="text-xs text-gray-400">Wins</p>
+            <CardContent className="p-2 text-center">
+              <Target className="w-5 h-5 mx-auto mb-1 text-green-400" />
+              <p className="text-base font-bold">{user.totalWins}</p>
+              <p className="text-[10px] text-gray-400">Wins</p>
             </CardContent>
           </Card>
           <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-3 text-center">
-              <Flame className="w-6 h-6 mx-auto mb-1 text-orange-400" />
-              <p className="text-lg font-bold">{user.currentStreak}</p>
-              <p className="text-xs text-gray-400">Streak</p>
+            <CardContent className="p-2 text-center">
+              <Flame className="w-5 h-5 mx-auto mb-1 text-orange-400" />
+              <p className="text-base font-bold">{user.currentStreak}</p>
+              <p className="text-[10px] text-gray-400">Streak</p>
             </CardContent>
           </Card>
         </div>
       )}
 
-      {/* Daily Streak & Quests Section */}
-      <div className="space-y-4">
-        <StreakDisplay />
-        <DailyQuests />
-      </div>
-
-      {/* Season Pass & Spin Wheel Section */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <SeasonPass />
-        <SpinWheel />
-      </div>
-
-      {/* Featured Videos Section */}
-      <VideoWidget />
-
-      {/* AI Tutor Widget */}
-      <AITutorWidget />
-
-      <Card className="bg-white/5 border-white/10">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-purple-400" />
-            Choose Subject
+      {/* MAIN SPARRING SECTION - Featured Prominently */}
+      <Card className="bg-gradient-to-br from-purple-900/30 to-cyan-900/30 border-purple-500/30 overflow-hidden">
+        <CardHeader className="pb-2 text-center">
+          <CardTitle className="text-xl flex items-center justify-center gap-2">
+            <Swords className="w-6 h-6 text-purple-400" />
+            Sparring Arena
           </CardTitle>
+          <p className="text-sm text-gray-400">Choose your battle mode</p>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-2">
-            {subjects.map((subject) => (
-              <motion.button
-                key={subject}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setSelectedSubject(subject)}
-                className={`p-3 rounded-xl text-left border transition-all ${
-                  selectedSubject === subject
-                    ? 'bg-purple-500/30 border-purple-500 text-white'
-                    : 'bg-white/5 border-white/10 hover:border-purple-500/50 text-gray-300'
-                }`}
-              >
-                <span className="text-xl">{subjectIcons[subject] || '📖'}</span>
-                <p className="text-sm font-medium mt-1">{subject}</p>
-              </motion.button>
-            ))}
+        <CardContent className="space-y-4">
+          {/* Subject Selection */}
+          <div className="space-y-2">
+            <p className="text-xs text-gray-400 text-center">Select Subject</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {subjects.map((subject) => (
+                <motion.button
+                  key={subject}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setSelectedSubject(subject)}
+                  className={`px-3 py-1.5 rounded-full text-sm border transition-all ${
+                    selectedSubject === subject
+                      ? 'bg-purple-500/30 border-purple-500 text-white'
+                      : 'bg-white/5 border-white/10 hover:border-purple-500/50 text-gray-300'
+                  }`}
+                >
+                  {subjectIcons[subject]} {subject}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+
+          {/* Two Main Sparring Buttons */}
+          <div className="grid grid-cols-1 gap-3">
+            {/* Play with Bot - Primary */}
+            <Link href="/ai-tutor">
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  className="w-full py-8 text-lg font-semibold bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 border-0 shadow-lg shadow-cyan-500/25"
+                >
+                  <Bot className="w-6 h-6 mr-3" />
+                  Play with Bot
+                  <span className="ml-2 text-xs opacity-75">Practice Mode</span>
+                </Button>
+              </motion.div>
+            </Link>
+
+            {/* Play with Student - Secondary */}
+            <Link href="/multiplayer">
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  className="w-full py-8 text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 border-0 shadow-lg shadow-purple-500/25"
+                >
+                  <Users className="w-6 h-6 mr-3" />
+                  Play with Student
+                  <span className="ml-2 text-xs opacity-75">Live Match</span>
+                </Button>
+              </motion.div>
+            </Link>
           </div>
         </CardContent>
       </Card>
 
-      <div className="space-y-3">
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <Button
-            onClick={onStartMatch}
-            disabled={isSearching}
-            className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 border-0 shadow-lg shadow-purple-500/25"
-          >
-            {isSearching ? (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="mr-2"
-              >
-                <Clock className="w-5 h-5" />
-              </motion.div>
-            ) : (
-              <Zap className="w-5 h-5 mr-2" />
-            )}
-            {isSearching ? 'Finding Opponent...' : `Quick Match: ${selectedSubject}`}
-          </Button>
-        </motion.div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            variant="outline"
-            className="py-5 border-white/20 bg-white/5 hover:bg-white/10"
-            onClick={onStartMatch}
-          >
-            <Trophy className="w-4 h-4 mr-2 text-yellow-400" />
-            Ranked Match
-          </Button>
-          <Button
-            variant="outline"
-            className="py-5 border-white/20 bg-white/5 hover:bg-white/10"
-          >
-            <Users className="w-4 h-4 mr-2 text-cyan-400" />
-            Challenge
-          </Button>
-        </div>
+      {/* Quick Stats Row */}
+      <div className="grid grid-cols-4 gap-2">
+        <Link href="/leaderboard">
+          <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <CardContent className="p-2 text-center">
+              <Trophy className="w-4 h-4 mx-auto mb-1 text-yellow-400" />
+              <p className="text-[10px] text-gray-400">Ranks</p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/ai-tutor">
+          <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <CardContent className="p-2 text-center">
+              <Brain className="w-4 h-4 mx-auto mb-1 text-purple-400" />
+              <p className="text-[10px] text-gray-400">AI Tutor</p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/videos">
+          <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <CardContent className="p-2 text-center">
+              <Video className="w-4 h-4 mx-auto mb-1 text-red-400" />
+              <p className="text-[10px] text-gray-400">Videos</p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/social">
+          <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <CardContent className="p-2 text-center">
+              <Users className="w-4 h-4 mx-auto mb-1 text-cyan-400" />
+              <p className="text-[10px] text-gray-400">Social</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
+      {/* Daily Streak & Quests Section */}
+      <div className="space-y-3">
+        <StreakDisplay />
+        <DailyQuests />
+      </div>
+
+      {/* Live Matches */}
       {liveMatches.length > 0 && (
         <Card className="bg-gradient-to-br from-red-900/20 to-orange-900/20 border-red-500/20">
           <CardHeader className="pb-2">
@@ -1862,6 +1895,33 @@ function SettingsView() {
             <option value="hi">हिंदी</option>
             <option value="pt">Português</option>
           </select>
+        </CardContent>
+      </Card>
+
+      {/* Help & Onboarding */}
+      <Card className="bg-white/5 border-white/10">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-purple-400" />
+            Help & Getting Started
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Link href="/onboarding">
+            <Button
+              variant="outline"
+              className="w-full justify-between border-white/20 bg-white/5 hover:bg-white/10"
+            >
+              <div className="flex items-center gap-2">
+                <Info className="w-4 h-4" />
+                <span>View Onboarding Guide</span>
+              </div>
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </Link>
+          <p className="text-xs text-gray-400 text-center">
+            Review how EduSparring works and learn about all features
+          </p>
         </CardContent>
       </Card>
     </div>
