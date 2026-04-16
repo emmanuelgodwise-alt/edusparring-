@@ -220,17 +220,23 @@ export default function OnboardingPage() {
   const handleNext = () => {
     if (currentStep < ONBOARDING_STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
+      // Scroll to top when navigating to next step
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+      // Scroll to top when navigating to previous step
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleSkip = async () => {
+    // For non-authenticated users, save to localStorage
     if (!isAuthenticated) {
+      localStorage.setItem('edusparring_onboarding_completed', 'true');
       router.push('/');
       return;
     }
@@ -243,15 +249,20 @@ export default function OnboardingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed: true })
       });
+      // Also save to localStorage as backup
+      localStorage.setItem('edusparring_onboarding_completed', 'true');
       router.push('/');
     } catch (error) {
       console.error('Failed to skip onboarding:', error);
+      localStorage.setItem('edusparring_onboarding_completed', 'true');
       router.push('/');
     }
   };
 
   const handleComplete = async () => {
+    // For non-authenticated users, save to localStorage
     if (!isAuthenticated) {
+      localStorage.setItem('edusparring_onboarding_completed', 'true');
       router.push('/');
       return;
     }
@@ -264,9 +275,12 @@ export default function OnboardingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed: true })
       });
+      // Also save to localStorage as backup
+      localStorage.setItem('edusparring_onboarding_completed', 'true');
       router.push('/');
     } catch (error) {
       console.error('Failed to complete onboarding:', error);
+      localStorage.setItem('edusparring_onboarding_completed', 'true');
       router.push('/');
     }
   };
@@ -431,7 +445,10 @@ export default function OnboardingPage() {
               {ONBOARDING_STEPS.map((_, index) => (
                 <button
                   key={index}
-                  onClick={() => setCurrentStep(index)}
+                  onClick={() => {
+                    setCurrentStep(index);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                   className={`w-2 h-2 rounded-full transition-all ${
                     index === currentStep
                       ? 'w-8 bg-gradient-to-r from-purple-500 to-cyan-500'

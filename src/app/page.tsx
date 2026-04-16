@@ -336,6 +336,11 @@ export default function Home() {
   // Initialize user from auth when authenticated
   useEffect(() => {
     if (isAuthenticated && authUser) {
+      // Check localStorage first for onboarding status (works for both authenticated and anonymous users)
+      const localStorageOnboarding = typeof window !== 'undefined' 
+        ? localStorage.getItem('edusparring_onboarding_completed') 
+        : null;
+      
       // Fetch full user data from database
       const fetchUserData = async () => {
         try {
@@ -344,8 +349,8 @@ export default function Home() {
           if (data.success && data.user) {
             setUser(data.user);
             
-            // Check onboarding status
-            if (!data.user.hasCompletedOnboarding) {
+            // Check onboarding status - only redirect if NOT completed in localStorage AND NOT in DB
+            if (!data.user.hasCompletedOnboarding && localStorageOnboarding !== 'true') {
               router.push('/onboarding');
               return;
             }
@@ -369,9 +374,11 @@ export default function Home() {
               subjects: [],
               achievements: [],
             });
-            // New user - redirect to onboarding
-            router.push('/onboarding');
-            return;
+            // Only redirect to onboarding if not completed in localStorage
+            if (localStorageOnboarding !== 'true') {
+              router.push('/onboarding');
+              return;
+            }
           }
         } catch (error) {
           console.error('Failed to fetch user data:', error);
