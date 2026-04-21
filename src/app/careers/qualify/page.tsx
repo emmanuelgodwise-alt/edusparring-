@@ -191,7 +191,7 @@ export default function QualifyPage() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${tierColors[path.tier]} flex items-center justify-center`}>
-                        <path.icon className="w-6 h-6 text-slate-900" />
+                        <path.icon className="w-6 h-6 text-white" />
                       </div>
                       <Badge variant="outline" className={`
                         ${path.tier === 'Silver' ? 'border-gray-400 text-gray-400' : ''}
