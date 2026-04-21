@@ -331,6 +331,15 @@ export async function submitAnswer(
     const playerWon = winner === playerId;
     const krChange = calculateKRChange(playerKR, opponentKR, playerWon);
 
+    // Get current user data to properly update bestStreak
+    const currentPlayer = await prisma.user.findUnique({
+      where: { id: playerId },
+      select: { currentStreak: true, bestStreak: true }
+    });
+
+    const newCurrentStreak = playerWon ? (currentPlayer?.currentStreak || 0) + 1 : 0;
+    const newBestStreak = Math.max(newCurrentStreak, currentPlayer?.bestStreak || 0);
+
     await prisma.user.update({
       where: { id: playerId },
       data: {
@@ -338,8 +347,10 @@ export async function submitAnswer(
         points: { increment: playerWon ? 50 : 20 },
         totalWins: playerWon ? { increment: 1 } : undefined,
         totalLosses: !playerWon ? { increment: 1 } : undefined,
-        currentStreak: playerWon ? { increment: 1 } : 0,
-        bestStreak: playerWon ? { increment: 1 } : undefined
+        currentStreak: newCurrentStreak,
+        bestStreak: playerWon && newCurrentStreak > (currentPlayer?.bestStreak || 0) 
+          ? newBestStreak 
+          : undefined
       }
     });
   }

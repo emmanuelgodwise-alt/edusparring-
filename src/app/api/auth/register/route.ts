@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
+import { checkRateLimit, getClientIdentifier, rateLimitErrorResponse, rateLimitConfigs } from "@/lib/rate-limit";
 
 // Password strength validation
 function validatePassword(password: string): { valid: boolean; message: string } {
@@ -27,6 +28,13 @@ function validateEmail(email: string): boolean {
 
 export async function POST(request: Request) {
   try {
+    // Rate limiting check
+    const identifier = getClientIdentifier(request);
+    const rateLimitResult = checkRateLimit(identifier, rateLimitConfigs.register);
+    if (!rateLimitResult.success) {
+      return rateLimitErrorResponse(rateLimitResult);
+    }
+
     const body = await request.json();
     const { name, email, password, confirmPassword, country } = body;
 

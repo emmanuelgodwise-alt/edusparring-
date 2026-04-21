@@ -295,9 +295,17 @@ export default function SparringLobbyPage() {
     console.log('Message sent:', { original, translated });
   };
 
-  // Start sparring
+  // Start sparring - navigate to the game page with the selected partner
   const handleStartSparring = () => {
-    router.push('/sparring');
+    if (!selectedPartner) return;
+    // Generate a match ID and navigate to the game page with opponent info
+    const matchId = `match-${Date.now()}-${selectedPartner.id}`;
+    const params = new URLSearchParams({
+      name: selectedPartner.name,
+      kr: selectedPartner.knowledgeRating.toString(),
+      country: selectedPartner.country,
+    });
+    router.push(`/sparring/game/${matchId}?${params.toString()}`);
   };
 
   // Filter partners by search

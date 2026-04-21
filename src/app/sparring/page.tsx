@@ -129,13 +129,14 @@ export default function SparringArena() {
 
   // Handle mode selection
   const handleModeSelect = (mode: 'bot' | 'player') => {
-    setSelectedMode(mode);
     if (mode === 'player') {
+      // Navigate directly to lobby without state changes to avoid UI flicker
       router.push('/sparring/lobby');
     } else {
+      setSelectedMode(mode);
       setShowSubjectSelect(true);
+      setShowModeSelect(false);
     }
-    setShowModeSelect(false);
   };
 
   // Start sparring with selected subject and difficulty

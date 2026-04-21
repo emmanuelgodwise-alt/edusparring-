@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
   Send, User, CheckCircle2, XCircle,
-  HelpCircle, Trophy, RotateCcw, Target, Volume2, VolumeX, Clock, Swords
+  HelpCircle, Trophy, RotateCcw, Target, Volume2, VolumeX, Clock, Swords, ArrowLeft
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import Link from 'next/link';
 
 // Subject icons
 const subjectIcons: Record<string, string> = {
@@ -67,7 +68,13 @@ function getQuestion(subject: string) {
 export default function PvPGamePage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const matchId = params.matchId as string;
+  
+  // Get opponent info from URL params
+  const opponentName = searchParams.get('name') || 'Opponent';
+  const opponentKR = parseInt(searchParams.get('kr') || '1200', 10);
+  const opponentCountry = searchParams.get('country') || 'US';
   
   const [isLoading, setIsLoading] = useState(true);
   const [playerQuestion, setPlayerQuestion] = useState('');
@@ -77,7 +84,7 @@ export default function PvPGamePage() {
   
   const [gameState, setGameState] = useState<GameState>({
     matchId,
-    opponent: { id: 'opponent-1', name: 'Opponent', knowledgeRating: 1200 },
+    opponent: { id: 'opponent-1', name: opponentName, knowledgeRating: opponentKR },
     subject: 'Math',
     difficulty: 'medium',
     currentRound: 1,
@@ -100,16 +107,17 @@ export default function PvPGamePage() {
     setTimeout(() => {
       setGameState(prev => ({
         ...prev,
+        opponent: { id: 'opponent-1', name: opponentName, knowledgeRating: opponentKR },
         messages: [{
           id: '1',
           type: 'system',
-          content: 'Match started! You ask first. Type a question for your opponent!',
+          content: `Match started against ${opponentName}! You ask first. Type a question for your opponent!`,
           sender: 'system'
         }]
       }));
       setIsLoading(false);
     }, 1000);
-  }, []);
+  }, [opponentName, opponentKR]);
 
   useEffect(() => {
     if (gameState.status !== 'active' || isLoading) return;
@@ -251,10 +259,15 @@ export default function PvPGamePage() {
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
+              <Link href="/sparring/lobby">
+                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+              </Link>
               <Swords className="w-8 h-8 text-purple-400" />
               <div>
                 <span className="text-lg font-bold">{subjectIcons[gameState.subject]} {gameState.subject}</span>
-                <p className="text-xs text-gray-400">Round {gameState.currentRound} of {gameState.totalRounds}</p>
+                <p className="text-xs text-gray-400">vs {gameState.opponent.name} • Round {gameState.currentRound} of {gameState.totalRounds}</p>
               </div>
             </div>
 
@@ -270,7 +283,7 @@ export default function PvPGamePage() {
                 </div>
                 <div className="w-px h-8 bg-white/20" />
                 <div className="text-center">
-                  <p className="text-[10px] text-gray-400">THEM</p>
+                  <p className="text-[10px] text-gray-400">{gameState.opponent.name.split(' ')[0].toUpperCase()}</p>
                   <p className="text-xl font-bold text-purple-400">{gameState.opponentScore}</p>
                 </div>
               </div>
@@ -344,12 +357,17 @@ export default function PvPGamePage() {
             <div className="text-center py-4">
               <Trophy className="w-12 h-12 mx-auto text-yellow-400 mb-2" />
               <h3 className="text-xl font-bold">
-                {gameState.winner === 'player' ? '🎉 You Win!' : gameState.winner === 'opponent' ? 'You Lose!' : "It's a Draw!"}
+                {gameState.winner === 'player' ? '🎉 You Win!' : gameState.winner === 'opponent' ? `${gameState.opponent.name} Wins!` : "It's a Draw!"}
               </h3>
-              <p className="text-gray-400 text-sm mb-3">Final: You {gameState.playerScore} - {gameState.opponentScore} Opponent</p>
-              <Button onClick={() => router.push('/sparring')} className="bg-gradient-to-r from-purple-600 to-cyan-600">
-                <RotateCcw className="w-4 h-4 mr-2" />Play Again
-              </Button>
+              <p className="text-gray-400 text-sm mb-3">Final: You {gameState.playerScore} - {gameState.opponentScore} {gameState.opponent.name}</p>
+              <div className="flex gap-2 justify-center">
+                <Button onClick={() => router.push('/sparring/lobby')} variant="outline" className="border-white/20">
+                  <RotateCcw className="w-4 h-4 mr-2" />Find New Opponent
+                </Button>
+                <Button onClick={() => router.push('/sparring')} className="bg-gradient-to-r from-purple-600 to-cyan-600">
+                  <Swords className="w-4 h-4 mr-2" />Play Again
+                </Button>
+              </div>
             </div>
           ) : gameState.isPlayerTurn ? (
             <div className="space-y-2">
