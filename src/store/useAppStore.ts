@@ -252,7 +252,7 @@ interface AppState {
 export const useAppStore = create<AppState>((set, get) => ({
   // Initial state
   user: null,
-  isLoading: true,
+  isLoading: false,
   isAuthenticated: false,
   activeTab: 'home',
   showMatchResult: false,

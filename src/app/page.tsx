@@ -313,7 +313,7 @@ export default function Home() {
     showFriendsModal, setShowFriendsModal, friends, setFriends
   } = useAppStore();
 
-  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+  const [checkingOnboarding, setCheckingOnboarding] = useState(false);
   const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
 
   // Immediately set loading to false on mount - show content right away
