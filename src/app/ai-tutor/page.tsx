@@ -6,13 +6,20 @@ import {
   Brain, Video, BookOpen, Target, Trophy, Clock, Sparkles,
   ChevronRight, Star, Zap, TrendingUp, Lightbulb, ArrowLeft,
   Bot, Play, Swords, Timer, CheckCircle, XCircle, AlertCircle,
-  Volume2, VolumeX, RotateCcw, Medal, Flame
+  Volume2, VolumeX, RotateCcw, Medal, Flame, Menu, Home, Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { AITutor, AITutorWidget } from '@/components/ai/AITutor';
 import { RecommendationsDisplay, RecommendationsWidget } from '@/components/ai/Recommendations';
 import { AdaptiveDifficultyDisplay, useAdaptiveDifficulty } from '@/components/ai/AdaptiveDifficulty';
@@ -78,6 +85,7 @@ export default function AITutorPage() {
   const { user, isAuthenticated } = useAuth();
   const [selectedSubject, setSelectedSubject] = useState('Math');
   const [activeTab, setActiveTab] = useState('tutor');
+  const [menuOpen, setMenuOpen] = useState(false);
   const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
 
   const { difficulty, performance, adjustmentReason } = useAdaptiveDifficulty(
@@ -227,20 +235,21 @@ export default function AITutorPage() {
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center">
-                <Brain className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center">
+                <Brain className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                <h1 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
                   AI Study Center
                 </h1>
-                <p className="text-xs text-gray-400">Personalized learning powered by AI</p>
+                <p className="text-[10px] text-gray-400 hidden sm:block">Personalized learning powered by AI</p>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Desktop: Subject selector + Search */}
+          <div className="hidden md:flex items-center gap-3">
             <select
               value={selectedSubject}
               onChange={(e) => setSelectedSubject(e.target.value)}
@@ -254,6 +263,63 @@ export default function AITutorPage() {
               <option value="Geography">Geography</option>
             </select>
             <SearchTrigger onClick={openSearch} />
+          </div>
+
+          {/* Mobile: Search + Hamburger */}
+          <div className="flex md:hidden items-center gap-2">
+            <SearchTrigger onClick={openSearch} />
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-white/10">
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px] bg-slate-950 border-white/10 text-white p-0">
+                <div className="h-full flex flex-col">
+                  <div className="p-4 border-b border-white/10 bg-gradient-to-r from-purple-900/30 to-cyan-900/30">
+                    <SheetHeader>
+                      <SheetTitle className="text-white">AI Tutor Menu</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-4">
+                      <select
+                        value={selectedSubject}
+                        onChange={(e) => setSelectedSubject(e.target.value)}
+                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white"
+                      >
+                        <option value="Math">📐 Math</option>
+                        <option value="Physics">⚛️ Physics</option>
+                        <option value="Chemistry">🧪 Chemistry</option>
+                        <option value="Biology">🧬 Biology</option>
+                        <option value="History">📜 History</option>
+                        <option value="Geography">🌍 Geography</option>
+                      </select>
+                    </div>
+                  </div>
+                  <nav className="flex-1 p-2">
+                    <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                      <Home className="w-5 h-5" />
+                      <span>Home</span>
+                    </Link>
+                    <Link href="/sparring" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                      <Swords className="w-5 h-5" />
+                      <span>Sparring</span>
+                    </Link>
+                    <Link href="/videos" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                      <Video className="w-5 h-5" />
+                      <span>Videos</span>
+                    </Link>
+                    <Link href="/social" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                      <Users className="w-5 h-5" />
+                      <span>Social</span>
+                    </Link>
+                    <Link href="/leaderboard" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                      <Trophy className="w-5 h-5" />
+                      <span>Leaderboard</span>
+                    </Link>
+                  </nav>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>

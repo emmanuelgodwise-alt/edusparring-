@@ -4,13 +4,21 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Trophy, Medal, Crown, Globe, Search, ChevronRight,
-  ArrowLeft, TrendingUp, Flame, Star
+  ArrowLeft, TrendingUp, Flame, Star, Menu, Home, Brain,
+  Video, Users, Swords
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { CountrySelector } from '@/components/ui/LanguageSelector';
 import Link from 'next/link';
 import { GlobalSearch, SearchTrigger, useGlobalSearch } from '@/components/navigation';
@@ -53,6 +61,7 @@ export default function GlobalLeaderboardPage() {
   const [selectedSubject, setSelectedSubject] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
 
   // Filter leaderboard
@@ -91,20 +100,70 @@ export default function GlobalLeaderboardPage() {
                 </Button>
               </Link>
               <Link href="/" className="flex items-center gap-2">
-                <Globe className="w-6 h-6 text-purple-400" />
+                <Globe className="w-5 h-5 text-purple-400" />
                 <div>
-                  <h1 className="text-lg font-bold">Global Leaderboard</h1>
-                  <p className="text-xs text-gray-400">Top players worldwide</p>
+                  <h1 className="text-base font-bold">Leaderboard</h1>
+                  <p className="text-[10px] text-gray-400 hidden sm:block">Top players worldwide</p>
                 </div>
               </Link>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* Desktop: Search + Country Selector */}
+            <div className="hidden md:flex items-center gap-3">
               <SearchTrigger onClick={openSearch} />
               <CountrySelector 
                 currentCountry={selectedCountry}
                 onCountryChange={(c) => setSelectedCountry(c)}
               />
+            </div>
+
+            {/* Mobile: Search + Hamburger */}
+            <div className="flex md:hidden items-center gap-2">
+              <SearchTrigger onClick={openSearch} />
+              <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-white/10">
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[280px] bg-slate-950 border-white/10 text-white p-0">
+                  <div className="h-full flex flex-col">
+                    <div className="p-4 border-b border-white/10 bg-gradient-to-r from-purple-900/30 to-cyan-900/30">
+                      <SheetHeader>
+                        <SheetTitle className="text-white">Leaderboard Menu</SheetTitle>
+                      </SheetHeader>
+                      <div className="mt-4">
+                        <CountrySelector 
+                          currentCountry={selectedCountry}
+                          onCountryChange={(c) => setSelectedCountry(c)}
+                        />
+                      </div>
+                    </div>
+                    <nav className="flex-1 p-2">
+                      <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <Home className="w-5 h-5" />
+                        <span>Home</span>
+                      </Link>
+                      <Link href="/sparring" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <Swords className="w-5 h-5" />
+                        <span>Sparring</span>
+                      </Link>
+                      <Link href="/ai-tutor" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <Brain className="w-5 h-5" />
+                        <span>AI Tutor</span>
+                      </Link>
+                      <Link href="/videos" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <Video className="w-5 h-5" />
+                        <span>Videos</span>
+                      </Link>
+                      <Link href="/social" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <Users className="w-5 h-5" />
+                        <span>Social</span>
+                      </Link>
+                    </nav>
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </div>

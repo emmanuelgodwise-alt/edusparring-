@@ -4,12 +4,19 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Swords, Trophy, Radio, Users, Calendar, ChevronRight, ArrowLeft,
-  Zap, Target, Crown, Star, Eye
+  Zap, Target, Crown, Star, Eye, Menu, Home, Brain, Video
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { MatchmakingQueue } from '@/components/multiplayer/LiveBattle';
 import { TournamentsList } from '@/components/multiplayer/Tournament';
 import { LiveMatchList } from '@/components/multiplayer/SpectatorMode';
@@ -23,6 +30,7 @@ export default function MultiplayerPage() {
   const [activeTab, setActiveTab] = useState('arena');
   const [selectedSubject, setSelectedSubject] = useState('Math');
   const [inMatch, setInMatch] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [currentBattle, setCurrentBattle] = useState<LiveBattle | null>(null);
   const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
 
@@ -114,21 +122,21 @@ export default function MultiplayerPage() {
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center">
-                <Swords className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center">
+                <Swords className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                <h1 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
                   Multiplayer Arena
                 </h1>
-                <p className="text-xs text-gray-400">Compete • Win • Rank Up</p>
+                <p className="text-[10px] text-gray-400 hidden sm:block">Compete • Win • Rank Up</p>
               </div>
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="flex items-center gap-4">
+          {/* Stats - Desktop only */}
+          <div className="hidden md:flex items-center gap-4">
             <SearchTrigger onClick={openSearch} />
             <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
               <Crown className="w-4 h-4 text-yellow-400" />
@@ -138,6 +146,65 @@ export default function MultiplayerPage() {
               <Trophy className="w-4 h-4 text-purple-400" />
               <span className="text-sm font-medium">12 Wins</span>
             </div>
+          </div>
+
+          {/* Mobile: Search + Hamburger */}
+          <div className="flex md:hidden items-center gap-2">
+            <SearchTrigger onClick={openSearch} />
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-white/10">
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px] bg-slate-950 border-white/10 text-white p-0">
+                <div className="h-full flex flex-col">
+                  <div className="p-4 border-b border-white/10 bg-gradient-to-r from-purple-900/30 to-cyan-900/30">
+                    <SheetHeader>
+                      <SheetTitle className="text-white">Arena Menu</SheetTitle>
+                    </SheetHeader>
+                    <div className="grid grid-cols-2 gap-2 mt-4">
+                      <div className="bg-white/5 rounded-lg p-2 text-center">
+                        <Crown className="w-4 h-4 mx-auto text-yellow-400 mb-1" />
+                        <p className="text-sm font-bold">850</p>
+                        <p className="text-[10px] text-gray-400">KR Rating</p>
+                      </div>
+                      <div className="bg-white/5 rounded-lg p-2 text-center">
+                        <Trophy className="w-4 h-4 mx-auto text-purple-400 mb-1" />
+                        <p className="text-sm font-bold">12</p>
+                        <p className="text-[10px] text-gray-400">Wins</p>
+                      </div>
+                    </div>
+                  </div>
+                  <nav className="flex-1 p-2">
+                    <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                      <Home className="w-5 h-5" />
+                      <span>Home</span>
+                    </Link>
+                    <Link href="/sparring" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                      <Swords className="w-5 h-5" />
+                      <span>Sparring</span>
+                    </Link>
+                    <Link href="/ai-tutor" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                      <Brain className="w-5 h-5" />
+                      <span>AI Tutor</span>
+                    </Link>
+                    <Link href="/videos" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                      <Video className="w-5 h-5" />
+                      <span>Videos</span>
+                    </Link>
+                    <Link href="/social" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                      <Users className="w-5 h-5" />
+                      <span>Social</span>
+                    </Link>
+                    <Link href="/leaderboard" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                      <Trophy className="w-5 h-5" />
+                      <span>Leaderboard</span>
+                    </Link>
+                  </nav>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>

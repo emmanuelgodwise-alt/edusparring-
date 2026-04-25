@@ -150,45 +150,45 @@ export default function SocialHubPage() {
 
       {/* Main Content */}
       <main className="max-w-2xl mx-auto px-4 py-4">
-        {/* Quick Links Grid */}
-        <div className="grid grid-cols-5 gap-2 mb-4">
+        {/* Quick Links Grid - Responsive: 5 cols on md+, scrollable on mobile */}
+        <div className="grid grid-cols-5 gap-2 mb-4 overflow-x-auto scrollbar-hide">
           {QUICK_LINKS.map((link) => (
             <Link key={link.id} href={link.href}>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex flex-col items-center gap-1"
+                className="flex flex-col items-center gap-1 min-w-[60px]"
               >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${link.color} flex items-center justify-center`}>
-                  <link.icon className="w-5 h-5 text-white" />
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${link.color} flex items-center justify-center`}>
+                  <link.icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <span className="text-[10px] text-gray-400 text-center">{link.label}</span>
+                <span className="text-[9px] sm:text-[10px] text-gray-400 text-center leading-tight">{link.label}</span>
               </motion.div>
             </Link>
           ))}
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5 bg-slate-800/50 border border-slate-700 mb-4">
-            <TabsTrigger value="feed" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white p-2">
+          <TabsList className="grid w-full grid-cols-5 bg-slate-800/50 border border-slate-700 mb-4 h-auto">
+            <TabsTrigger value="feed" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white p-2 flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1">
               <MessageSquare className="w-4 h-4" />
-              <span className="hidden sm:inline ml-1">Feed</span>
+              <span className="text-[10px] sm:text-sm">Feed</span>
             </TabsTrigger>
-            <TabsTrigger value="circles" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white p-2">
+            <TabsTrigger value="circles" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white p-2 flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1">
               <Users className="w-4 h-4" />
-              <span className="hidden sm:inline ml-1">Circles</span>
+              <span className="text-[10px] sm:text-sm">Circles</span>
             </TabsTrigger>
-            <TabsTrigger value="tutoring" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white p-2">
+            <TabsTrigger value="tutoring" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white p-2 flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1">
               <GraduationCap className="w-4 h-4" />
-              <span className="hidden sm:inline ml-1">Tutoring</span>
+              <span className="text-[10px] sm:text-sm">Tutoring</span>
             </TabsTrigger>
-            <TabsTrigger value="wellness" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white p-2">
+            <TabsTrigger value="wellness" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white p-2 flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1">
               <Heart className="w-4 h-4" />
-              <span className="hidden sm:inline ml-1">Wellness</span>
+              <span className="text-[10px] sm:text-sm">Wellness</span>
             </TabsTrigger>
-            <TabsTrigger value="safety" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white p-2">
+            <TabsTrigger value="safety" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white p-2 flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1">
               <Shield className="w-4 h-4" />
-              <span className="hidden sm:inline ml-1">Safety</span>
+              <span className="text-[10px] sm:text-sm">Safety</span>
             </TabsTrigger>
           </TabsList>
 

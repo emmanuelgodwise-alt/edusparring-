@@ -454,35 +454,35 @@ export default function SparringArena() {
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-black/30 border-b border-white/10">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-                <Swords className="w-8 h-8 text-purple-400" />
+                <Swords className="w-6 h-6 text-purple-400" />
               </motion.div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-lg font-bold">{subjectNames[state.subject]} Sparring</h1>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${DIFFICULTY_CONFIG[state.difficulty].bg} ${DIFFICULTY_CONFIG[state.difficulty].border} ${DIFFICULTY_CONFIG[state.difficulty].color}`}>{DIFFICULTY_CONFIG[state.difficulty].label}</span>
+                  <h1 className="text-base font-bold">{subjectNames[state.subject]}</h1>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${DIFFICULTY_CONFIG[state.difficulty].bg} ${DIFFICULTY_CONFIG[state.difficulty].border} ${DIFFICULTY_CONFIG[state.difficulty].color}`}>{DIFFICULTY_CONFIG[state.difficulty].label}</span>
                 </div>
-                <p className="text-xs text-gray-400">Round {state.roundNumber} of {maxRounds} • +{DIFFICULTY_CONFIG[state.difficulty].points} pts/correct</p>
+                <p className="text-[10px] text-gray-400">Round {state.roundNumber}/{maxRounds} • +{DIFFICULTY_CONFIG[state.difficulty].points}pts</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" onClick={toggleSound} className="text-gray-400 hover:text-white">
-                {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" onClick={toggleSound} className="text-gray-400 hover:text-white h-8 w-8">
+                {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
               </Button>
-              <div className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-2 border border-white/10">
-                <div className="text-center relative">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wide">You</p>
-                  <motion.p key={state.playerScore} initial={{ scale: 1.3, color: '#4ade80' }} animate={{ scale: 1, color: '#4ade80' }} className="text-xl font-bold text-green-400">{state.playerScore}</motion.p>
+              <div className="flex items-center gap-2 bg-white/10 rounded-lg px-2 py-1 border border-white/10">
+                <div className="text-center">
+                  <p className="text-[8px] text-gray-400 uppercase">You</p>
+                  <motion.p key={state.playerScore} initial={{ scale: 1.3, color: '#4ade80' }} animate={{ scale: 1, color: '#4ade80' }} className="text-base font-bold text-green-400">{state.playerScore}</motion.p>
                 </div>
-                <div className="w-px h-8 bg-white/20" />
-                <div className="text-center relative">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wide">Bot</p>
-                  <motion.p key={state.systemScore} initial={{ scale: 1.3, color: '#c084fc' }} animate={{ scale: 1, color: '#c084fc' }} className="text-xl font-bold text-purple-400">{state.systemScore}</motion.p>
+                <div className="w-px h-6 bg-white/20" />
+                <div className="text-center">
+                  <p className="text-[8px] text-gray-400 uppercase">Bot</p>
+                  <motion.p key={state.systemScore} initial={{ scale: 1.3, color: '#c084fc' }} animate={{ scale: 1, color: '#c084fc' }} className="text-base font-bold text-purple-400">{state.systemScore}</motion.p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={resetSparring} className="text-gray-400 hover:text-white">
-                <RotateCcw className="w-5 h-5" />
+              <Button variant="ghost" size="icon" onClick={resetSparring} className="text-gray-400 hover:text-white h-8 w-8">
+                <RotateCcw className="w-4 h-4" />
               </Button>
             </div>
           </div>

@@ -6,7 +6,8 @@ import {
   Users, Search, CheckCircle, X, Wifi, WifiOff,
   ArrowLeft, Bot, Send, MessageCircle, Swords,
   Globe, Star, Zap, Clock, ChevronRight, Sparkles,
-  Languages, Shield, AlertTriangle, Loader2
+  Languages, Shield, AlertTriangle, Loader2, Menu, Crown,
+  Trophy, Flame, Home, Brain, Video
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +16,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MultilingualChat, type TranslatedMessage, type LanguagePreference } from '@/components/chat/MultilingualChat';
@@ -198,6 +206,7 @@ export default function SparringLobbyPage() {
   const [activeTab, setActiveTab] = useState('partners');
   const [searchQuery, setSearchQuery] = useState('');
   const [isConnected] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
   const currentUserId = session?.user?.id || 'current-user';
   const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
   
@@ -359,15 +368,17 @@ export default function SparringLobbyPage() {
                   animate={{ rotate: [0, 10, -10, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <Swords className="w-8 h-8 text-purple-400" />
+                  <Swords className="w-7 h-7 text-purple-400" />
                 </motion.div>
                 <div>
-                  <h1 className="text-xl font-bold">Sparring Lobby</h1>
-                  <p className="text-xs text-gray-400">Find your opponent • Translate & Connect</p>
+                  <h1 className="text-lg font-bold">Sparring Lobby</h1>
+                  <p className="text-xs text-gray-400 hidden sm:block">Find your opponent • Translate & Connect</p>
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            
+            {/* Desktop badges */}
+            <div className="hidden md:flex items-center gap-3">
               {/* Translation indicator */}
               <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30">
                 <Languages className="w-3 h-3 mr-1" />
@@ -389,6 +400,65 @@ export default function SparringLobbyPage() {
                 {onlineCount} Online
               </Badge>
               <SearchTrigger onClick={openSearch} />
+            </div>
+            
+            {/* Mobile: Search + Hamburger */}
+            <div className="flex md:hidden items-center gap-2">
+              <SearchTrigger onClick={openSearch} />
+              <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-white/10">
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[280px] bg-slate-950 border-white/10 text-white p-0">
+                  <div className="h-full flex flex-col">
+                    <div className="p-4 border-b border-white/10 bg-gradient-to-r from-purple-900/30 to-cyan-900/30">
+                      <SheetHeader>
+                        <SheetTitle className="text-white">Lobby Menu</SheetTitle>
+                      </SheetHeader>
+                      <div className="grid grid-cols-2 gap-2 mt-4">
+                        <div className="bg-white/5 rounded-lg p-2 text-center">
+                          <Languages className="w-4 h-4 mx-auto text-cyan-400 mb-1" />
+                          <p className="text-sm font-bold">28</p>
+                          <p className="text-[10px] text-gray-400">Languages</p>
+                        </div>
+                        <div className="bg-white/5 rounded-lg p-2 text-center">
+                          <Users className="w-4 h-4 mx-auto text-purple-400 mb-1" />
+                          <p className="text-sm font-bold">{onlineCount}</p>
+                          <p className="text-[10px] text-gray-400">Online</p>
+                        </div>
+                      </div>
+                    </div>
+                    <nav className="flex-1 p-2">
+                      <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <Home className="w-5 h-5" />
+                        <span>Home</span>
+                      </Link>
+                      <Link href="/sparring" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <Swords className="w-5 h-5" />
+                        <span>Sparring</span>
+                      </Link>
+                      <Link href="/ai-tutor" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <Brain className="w-5 h-5" />
+                        <span>AI Tutor</span>
+                      </Link>
+                      <Link href="/videos" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <Video className="w-5 h-5" />
+                        <span>Videos</span>
+                      </Link>
+                      <Link href="/social" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <Users className="w-5 h-5" />
+                        <span>Social</span>
+                      </Link>
+                      <Link href="/leaderboard" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <Trophy className="w-5 h-5" />
+                        <span>Leaderboard</span>
+                      </Link>
+                    </nav>
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </header>
