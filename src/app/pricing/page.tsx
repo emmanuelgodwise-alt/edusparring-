@@ -287,9 +287,9 @@ export default function PricingPage() {
                           {feature.included ? (
                             <Check className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
                           ) : (
-                            <X className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                            <X className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
                           )}
-                          <span className={`text-sm ${feature.included ? 'text-gray-300' : 'text-gray-600'}`}>
+                          <span className={`text-sm ${feature.included ? 'text-gray-300' : 'text-gray-500'}`}>
                             {feature.name}
                             {feature.limit && feature.included && (
                               <span className="text-gray-500"> ({feature.limit})</span>
@@ -390,28 +390,28 @@ export default function PricingPage() {
                               <td className="py-3 text-sm">{feature.name}</td>
                               <td className="py-3 text-center text-sm">
                                 {typeof feature.free === 'boolean' ? (
-                                  feature.free ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-gray-600 mx-auto" />
+                                  feature.free ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-gray-500 mx-auto" />
                                 ) : (
                                   <span className="text-gray-400">{feature.free}</span>
                                 )}
                               </td>
                               <td className="py-3 text-center text-sm">
                                 {typeof feature.scholar === 'boolean' ? (
-                                  feature.scholar ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-gray-600 mx-auto" />
+                                  feature.scholar ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-gray-500 mx-auto" />
                                 ) : (
                                   <span className="text-gray-400">{feature.scholar}</span>
                                 )}
                               </td>
                               <td className="py-3 text-center text-sm">
                                 {typeof feature.champion === 'boolean' ? (
-                                  feature.champion ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-gray-600 mx-auto" />
+                                  feature.champion ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-gray-500 mx-auto" />
                                 ) : (
                                   <span className="text-cyan-400">{feature.champion}</span>
                                 )}
                               </td>
                               <td className="py-3 text-center text-sm">
                                 {typeof feature.elite === 'boolean' ? (
-                                  feature.elite ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-gray-600 mx-auto" />
+                                  feature.elite ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-gray-500 mx-auto" />
                                 ) : (
                                   <span className="text-purple-400">{feature.elite}</span>
                                 )}

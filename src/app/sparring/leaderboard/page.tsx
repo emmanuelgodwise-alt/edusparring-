@@ -251,7 +251,7 @@ export default function SparringLeaderboardPage() {
             {/* Empty State */}
             {data.leaderboard.length === 0 && (
               <div className="text-center py-12">
-                <Trophy className="w-16 h-16 mx-auto text-gray-600 mb-4" />
+                <Trophy className="w-16 h-16 mx-auto text-gray-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">No games yet!</h3>
                 <p className="text-gray-400 mb-4">Be the first to spar and top the leaderboard!</p>
                 <Link href="/sparring">

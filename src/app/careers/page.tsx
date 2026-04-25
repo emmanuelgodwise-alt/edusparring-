@@ -274,7 +274,7 @@ export default function CareersPortalPage() {
                 <Briefcase className="w-4 h-4" />
                 My Applications
               </Link>
-              <span className="text-gray-600">•</span>
+              <span className="text-gray-500">•</span>
               <Link href="/careers/placements" className="text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
                 <Award className="w-4 h-4" />
                 My Placements

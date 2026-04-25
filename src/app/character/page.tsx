@@ -421,7 +421,7 @@ export default function CharacterPage() {
                             key={star}
                             className={cn(
                               "w-4 h-4",
-                              star <= entry.mood ? "text-yellow-400 fill-yellow-400" : "text-gray-600"
+                              star <= entry.mood ? "text-yellow-400 fill-yellow-400" : "text-gray-500"
                             )}
                           />
                         ))}

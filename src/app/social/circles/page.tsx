@@ -276,7 +276,7 @@ export default function StudyCirclesPage() {
           {otherCircles.length === 0 ? (
             <Card className="bg-white/5 border-white/10">
               <CardContent className="p-8 text-center">
-                <Users className="w-12 h-12 mx-auto text-gray-600 mb-3" />
+                <Users className="w-12 h-12 mx-auto text-gray-500 mb-3" />
                 <p className="text-gray-400">No circles found</p>
                 <Button
                   onClick={() => setCreateDialogOpen(true)}

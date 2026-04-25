@@ -315,7 +315,7 @@ export default function MatchHistoryPage() {
             {/* Empty State */}
             {filteredMatches.length === 0 && (
               <div className="text-center py-12">
-                <History className="w-16 h-16 mx-auto text-gray-600 mb-4" />
+                <History className="w-16 h-16 mx-auto text-gray-500 mb-4" />
                 <p className="text-gray-400">No matches found</p>
                 <p className="text-sm text-gray-500 mt-1">Try adjusting your filters</p>
               </div>

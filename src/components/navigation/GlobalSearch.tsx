@@ -262,7 +262,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                 <div className="p-4">
                   {allItems.length === 0 ? (
                     <div className="text-center py-8">
-                      <Search className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                      <Search className="w-12 h-12 text-gray-500 mx-auto mb-3" />
                       <p className="text-gray-400">No results found for &quot;{query}&quot;</p>
                     </div>
                   ) : (

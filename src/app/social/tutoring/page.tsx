@@ -351,7 +351,7 @@ export default function PeerTutoringPage() {
                                   key={star}
                                   className={cn(
                                     "w-4 h-4",
-                                    star <= (session.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-600"
+                                    star <= (session.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-500"
                                   )}
                                 />
                               ))}
@@ -371,7 +371,7 @@ export default function PeerTutoringPage() {
             {sessions.length === 0 && (
               <Card className="bg-white/5 border-white/10">
                 <CardContent className="p-8 text-center">
-                  <Calendar className="w-12 h-12 mx-auto text-gray-600 mb-3" />
+                  <Calendar className="w-12 h-12 mx-auto text-gray-500 mb-3" />
                   <p className="text-gray-400">No tutoring sessions yet</p>
                   <Button
                     onClick={() => setActiveTab('find')}
