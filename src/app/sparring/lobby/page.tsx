@@ -6,7 +6,7 @@ import {
   Users, Search, CheckCircle, X, Wifi, WifiOff,
   ArrowLeft, Bot, Send, MessageCircle, Swords,
   Globe, Star, Zap, Clock, ChevronRight, Sparkles,
-  Languages, Shield, AlertTriangle
+  Languages, Shield, AlertTriangle, Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { MultilingualChat, type TranslatedMessage, type LanguagePreference } from '@/components/chat/MultilingualChat';
 import { type LanguageCode, SUPPORTED_LANGUAGES, getLanguageFlag, getLanguageNativeName } from '@/lib/translation';
 import { GlobalSearch, SearchTrigger, useGlobalSearch } from '@/components/navigation';
+import { useSession } from 'next-auth/react';
 
 // Country flags and names
 const countryFlags: Record<string, string> = {
@@ -50,7 +51,7 @@ const subjectNames: Record<string, string> = {
   ComputerScience: 'Computer Science', Civics: 'Civics', English: 'English',
 };
 
-// Mock sparring partners data
+// Sparring partner interface
 interface SparringPartner {
   id: string;
   name: string;
@@ -66,7 +67,8 @@ interface SparringPartner {
   lastActive: string;
 }
 
-const mockPartners: SparringPartner[] = [
+// Default mock partners (fallback when no real players)
+const defaultMockPartners: SparringPartner[] = [
   {
     id: '1',
     name: 'Alex Chen',
@@ -170,32 +172,6 @@ const mockPartners: SparringPartner[] = [
     favoriteSubjects: ['Biology', 'Chemistry'],
     winRate: 67,
     lastActive: 'now'
-  },
-  {
-    id: '9',
-    name: 'Wang Wei',
-    country: 'CN',
-    countryName: 'China',
-    language: 'zh',
-    knowledgeRating: 1420,
-    rank: 'Elite',
-    online: true,
-    favoriteSubjects: ['Math', 'Physics'],
-    winRate: 75,
-    lastActive: 'now'
-  },
-  {
-    id: '10',
-    name: 'Ahmed Hassan',
-    country: 'EG',
-    countryName: 'Egypt',
-    language: 'ar',
-    knowledgeRating: 1290,
-    rank: 'Advanced',
-    online: true,
-    favoriteSubjects: ['History', 'Geography'],
-    winRate: 62,
-    lastActive: 'now'
   }
 ];
 
@@ -207,20 +183,82 @@ const rankColors: Record<string, string> = {
   Elite: 'text-amber-400 bg-amber-500/20'
 };
 
+// Country name lookup
+const countryNames: Record<string, string> = {
+  US: 'United States', UK: 'United Kingdom', DE: 'Germany', FR: 'France', JP: 'Japan', KR: 'South Korea',
+  CN: 'China', IN: 'India', BR: 'Brazil', CA: 'Canada', AU: 'Australia', ES: 'Spain',
+  IT: 'Italy', MX: 'Mexico', RU: 'Russia', NL: 'Netherlands', SE: 'Sweden', PL: 'Poland',
+  NG: 'Nigeria', EG: 'Egypt', ZA: 'South Africa', SA: 'Saudi Arabia', AE: 'UAE', TR: 'Turkey'
+};
+
 export default function SparringLobbyPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [selectedPartner, setSelectedPartner] = useState<SparringPartner | null>(null);
   const [activeTab, setActiveTab] = useState('partners');
   const [searchQuery, setSearchQuery] = useState('');
   const [isConnected] = useState(true);
-  const [currentUserId] = useState('current-user');
+  const currentUserId = session?.user?.id || 'current-user';
   const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
+  
+  // Partners state
+  const [partners, setPartners] = useState<SparringPartner[]>([]);
+  const [isLoadingPartners, setIsLoadingPartners] = useState(true);
+  const [partnersError, setPartnersError] = useState<string | null>(null);
   
   // Language preference state
   const [languagePref, setLanguagePref] = useState<LanguagePreference>({
     myLanguage: 'en',
     theirLanguage: 'en',
   });
+
+  // Fetch potential opponents
+  useEffect(() => {
+    const fetchOpponents = async () => {
+      setIsLoadingPartners(true);
+      setPartnersError(null);
+      
+      try {
+        if (session?.user?.id) {
+          const response = await fetch(`/api/matchmaking/opponents?playerId=${session.user.id}&limit=20`);
+          const data = await response.json();
+          
+          if (data.success && data.opponents && data.opponents.length > 0) {
+            // Transform API data to match our interface
+            const transformedPartners: SparringPartner[] = data.opponents.map((opponent: any) => ({
+              id: opponent.id,
+              name: opponent.name,
+              avatar: opponent.avatar,
+              country: opponent.country || 'US',
+              countryName: countryNames[opponent.country] || 'Unknown',
+              language: countryToLanguage[opponent.country] || 'en',
+              knowledgeRating: opponent.knowledgeRating,
+              rank: opponent.tier,
+              online: opponent.online,
+              favoriteSubjects: opponent.favoriteSubjects || ['Math', 'Physics'],
+              winRate: opponent.winRate,
+              lastActive: opponent.lastActive || 'now'
+            }));
+            setPartners(transformedPartners);
+          } else {
+            // No real opponents found, use mock data
+            setPartners(defaultMockPartners);
+          }
+        } else {
+          // No session, use mock data
+          setPartners(defaultMockPartners);
+        }
+      } catch (error) {
+        console.error('Error fetching opponents:', error);
+        setPartnersError('Failed to load opponents. Showing demo players.');
+        setPartners(defaultMockPartners);
+      } finally {
+        setIsLoadingPartners(false);
+      }
+    };
+
+    fetchOpponents();
+  }, [session?.user?.id]);
 
   // Initial messages for chat
   const getInitialMessages = useCallback((partner: SparringPartner): TranslatedMessage[] => [
@@ -245,29 +283,11 @@ export default function SparringLobbyPage() {
     {
       id: '3',
       senderId: partner.id,
-      originalText: `${subjectIcons[partner.favoriteSubjects[0]]} ${subjectNames[partner.favoriteSubjects[0]]} is my favorite! Or we could try ${subjectNames[partner.favoriteSubjects[1]]}. Your choice!`,
-      translatedText: `${subjectIcons[partner.favoriteSubjects[0]]} ${subjectNames[partner.favoriteSubjects[0]]} is my favorite! Or we could try ${subjectNames[partner.favoriteSubjects[1]]}. Your choice!`,
+      originalText: `${subjectIcons[partner.favoriteSubjects[0]] || '📚'} ${subjectNames[partner.favoriteSubjects[0]] || 'General'} is my favorite! Or we could try ${subjectNames[partner.favoriteSubjects[1]] || 'another subject'}. Your choice!`,
+      translatedText: `${subjectIcons[partner.favoriteSubjects[0]] || '📚'} ${subjectNames[partner.favoriteSubjects[0]] || 'General'} is my favorite! Or we could try ${subjectNames[partner.favoriteSubjects[1]] || 'another subject'}. Your choice!`,
       originalLanguage: partner.language,
       targetLanguage: languagePref.myLanguage,
       timestamp: new Date(Date.now() - 60000),
-    },
-    {
-      id: '4',
-      senderId: 'current-user',
-      originalText: `Let's do ${subjectNames[partner.favoriteSubjects[0]]}! I'm feeling confident today 💪`,
-      translatedText: `Let's do ${subjectNames[partner.favoriteSubjects[0]]}! I'm feeling confident today 💪`,
-      originalLanguage: languagePref.myLanguage,
-      targetLanguage: partner.language,
-      timestamp: new Date(Date.now() - 30000),
-    },
-    {
-      id: '5',
-      senderId: partner.id,
-      originalText: `Awesome! My KR is ${partner.knowledgeRating}, so it should be a close match. May the best mind win! 🧠⚡`,
-      translatedText: `Awesome! My KR is ${partner.knowledgeRating}, so it should be a close match. May the best mind win! 🧠⚡`,
-      originalLanguage: partner.language,
-      targetLanguage: languagePref.myLanguage,
-      timestamp: new Date(Date.now() - 15000),
     }
   ], [languagePref.myLanguage]);
 
@@ -291,7 +311,6 @@ export default function SparringLobbyPage() {
 
   // Handle send message callback
   const handleSendMessage = (original: string, translated: string) => {
-    // In a real app, this would send to WebSocket/API
     console.log('Message sent:', { original, translated });
   };
 
@@ -309,11 +328,13 @@ export default function SparringLobbyPage() {
   };
 
   // Filter partners by search
-  const filteredPartners = mockPartners.filter(p => 
+  const filteredPartners = partners.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.countryName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.favoriteSubjects.some(s => subjectNames[s].toLowerCase().includes(searchQuery.toLowerCase()))
+    p.favoriteSubjects.some(s => subjectNames[s]?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  const onlineCount = partners.filter(p => p.online).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white">
@@ -365,7 +386,7 @@ export default function SparringLobbyPage() {
               )}
               <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
                 <Users className="w-3 h-3 mr-1" />
-                {mockPartners.filter(p => p.online).length} Online
+                {onlineCount} Online
               </Badge>
               <SearchTrigger onClick={openSearch} />
             </div>
@@ -394,6 +415,18 @@ export default function SparringLobbyPage() {
               {/* Partners List */}
               <ScrollArea className="flex-1">
                 <div className="p-2 space-y-2">
+                  {isLoadingPartners ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
+                      <span className="ml-2 text-gray-400">Finding opponents...</span>
+                    </div>
+                  ) : partnersError ? (
+                    <div className="p-4 text-center">
+                      <AlertTriangle className="w-6 h-6 text-yellow-400 mx-auto mb-2" />
+                      <p className="text-sm text-yellow-400">{partnersError}</p>
+                    </div>
+                  ) : null}
+                  
                   <AnimatePresence>
                     {filteredPartners.map((partner, index) => (
                       <motion.button
@@ -595,6 +628,13 @@ export default function SparringLobbyPage() {
                   {/* Partners List */}
                   <ScrollArea className="flex-1">
                     <div className="p-2 space-y-2">
+                      {isLoadingPartners ? (
+                        <div className="flex items-center justify-center py-8">
+                          <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
+                          <span className="ml-2 text-gray-400">Finding opponents...</span>
+                        </div>
+                      ) : null}
+                      
                       {filteredPartners.map((partner, index) => (
                         <motion.button
                           key={partner.id}
