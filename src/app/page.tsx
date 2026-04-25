@@ -27,6 +27,7 @@ import { StreakDisplay, DailyQuests, SeasonPass, SpinWheel, SpinWheelButton, Sea
 import { VideoWidget, VideoSuggestions } from '@/components/video';
 import { AITutorWidget } from '@/components/ai';
 import { GlobalSearch, SearchTrigger, useGlobalSearch } from '@/components/navigation';
+import { MobileHeader } from '@/components/navigation/MobileHeader';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -525,127 +526,26 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white">
-      {/* Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-black/30 border-b border-white/10">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Swords className="w-8 h-8 text-purple-400" />
-            </motion.div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-              EduSparring
-            </h1>
-          </div>
-
-          {user && (
-            <div className="flex items-center gap-3">
-              {/* AI Tutor Link */}
-              <Link href="/ai-tutor">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-full border border-purple-500/30 text-purple-400 hover:from-purple-500/30 hover:to-cyan-500/30 transition-colors"
-                >
-                  <Brain className="w-4 h-4" />
-                  <span className="text-sm hidden sm:inline">AI Tutor</span>
-                </motion.button>
-              </Link>
-
-              {/* Multiplayer Link */}
-              <Link href="/multiplayer">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-red-500/20 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/30 transition-colors"
-                >
-                  <Swords className="w-4 h-4" />
-                  <span className="text-sm hidden sm:inline">Battle</span>
-                </motion.button>
-              </Link>
-
-              {/* Video Lessons Link */}
-              <Link href="/videos">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/20 rounded-full border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors"
-                >
-                  <Video className="w-4 h-4" />
-                  <span className="text-sm hidden sm:inline">Videos</span>
-                </motion.button>
-              </Link>
-
-              {/* Spectator Mode Indicator */}
-              {liveMatches.length > 0 && (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  onClick={() => setActiveTab('home')}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-red-500/20 rounded-full border border-red-500/30 text-red-400"
-                >
-                  <Radio className="w-4 h-4 animate-pulse" />
-                  <span className="text-sm">{liveMatches.length} Live</span>
-                </motion.button>
-              )}
-              
-              {/* Global Search Trigger */}
-              <SearchTrigger onClick={openSearch} />
-              
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
-                <Trophy className="w-4 h-4 text-yellow-400" />
-                <span className="text-sm font-medium">{user.points.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
-                <Flame className="w-4 h-4 text-orange-400" />
-                <span className="text-sm font-medium">{user.currentStreak}</span>
-              </div>
-
-              {/* User Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2 cursor-pointer hover:bg-white/10 rounded-full p-2 transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-sm font-bold">
-                      {user.name.charAt(0)}
-                    </div>
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-slate-900 border-white/10">
-                  <DropdownMenuLabel className="text-white">
-                    <div className="flex flex-col space-y-1">
-                      <p className="font-medium">{user.name}</p>
-                      <p className="text-xs text-gray-400">{user.email}</p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <Crown className="w-4 h-4 text-yellow-400" />
-                        <span className="text-sm text-yellow-400">{user.knowledgeRating} KR</span>
-                      </div>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-white/10" />
-                  <DropdownMenuItem onClick={() => setActiveTab('profile')} className="text-gray-300 cursor-pointer hover:bg-white/10">
-                    <User className="w-4 h-4 mr-2" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setActiveTab('settings')} className="text-gray-300 cursor-pointer hover:bg-white/10">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="text-gray-300 cursor-pointer hover:bg-white/10">
-                    <Link href="/onboarding" className="flex items-center w-full">
-                      <HelpCircle className="w-4 h-4 mr-2" />
-                      View Onboarding
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-white/10" />
-                  <DropdownMenuItem onClick={handleSignOut} className="text-red-400 cursor-pointer hover:bg-red-500/10">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
-        </div>
-      </header>
+      {/* Header - Using MobileHeader with Hamburger Menu */}
+      <MobileHeader
+        user={user ? {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          knowledgeRating: user.knowledgeRating,
+          points: user.points,
+          currentStreak: user.currentStreak,
+          avatar: user.avatar,
+        } : null}
+        title="EduSparring"
+        actions={liveMatches.length > 0 ? [
+          {
+            label: `${liveMatches.length} Live Battles`,
+            icon: <Radio className="w-5 h-5 text-red-400 animate-pulse" />,
+            href: '/multiplayer',
+          }
+        ] : []}
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
