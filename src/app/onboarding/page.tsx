@@ -243,11 +243,11 @@ export default function OnboardingPage() {
     
     setIsCompleting(true);
     try {
-      // Mark onboarding as skipped
+      // Track the skip - increment skip count
       await fetch('/api/user/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ completed: true })
+        body: JSON.stringify({ action: 'skip' })
       });
       // Also save to localStorage as backup
       localStorage.setItem('edusparring_onboarding_completed', 'true');
@@ -269,11 +269,11 @@ export default function OnboardingPage() {
 
     setIsCompleting(true);
     try {
-      // Mark onboarding as completed
+      // Mark onboarding as fully completed (not skipped)
       await fetch('/api/user/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ completed: true })
+        body: JSON.stringify({ action: 'complete' })
       });
       // Also save to localStorage as backup
       localStorage.setItem('edusparring_onboarding_completed', 'true');

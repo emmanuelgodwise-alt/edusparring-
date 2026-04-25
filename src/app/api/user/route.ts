@@ -49,6 +49,8 @@ export async function GET(request: Request) {
         totalLosses: user.totalLosses,
         currentStreak: user.currentStreak,
         bestStreak: user.bestStreak,
+        hasCompletedOnboarding: user.hasCompletedOnboarding,
+        onboardingSkipCount: user.onboardingSkipCount,
         subjects: user.subjects.map(s => ({
           subject: s.subject,
           proficiency: s.proficiency

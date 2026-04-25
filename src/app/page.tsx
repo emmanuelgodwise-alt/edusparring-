@@ -349,8 +349,14 @@ export default function Home() {
           if (data.success && data.user) {
             setUser(data.user);
             
-            // Check onboarding status - only redirect if NOT completed in localStorage AND NOT in DB
-            if (!data.user.hasCompletedOnboarding && localStorageOnboarding !== 'true') {
+            // Check onboarding status - only redirect if:
+            // - NOT completed in DB
+            // - NOT skipped 5+ times (user is familiar with app)
+            // - NOT completed in localStorage
+            const skipCount = data.user.onboardingSkipCount ?? 0;
+            const hasSkippedEnough = skipCount >= 5;
+            
+            if (!data.user.hasCompletedOnboarding && !hasSkippedEnough && localStorageOnboarding !== 'true') {
               router.push('/onboarding');
               return;
             }
