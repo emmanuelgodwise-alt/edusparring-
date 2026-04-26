@@ -119,26 +119,45 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Registration error:", error);
 
+    // Check environment variables for debugging
+    const envCheck = {
+      hasDbUrl: !!process.env.DATABASE_URL,
+      hasDirectUrl: !!process.env.DIRECT_URL,
+      hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
+      nodeEnv: process.env.NODE_ENV,
+    };
+
+    console.error("Environment check:", envCheck);
+
     // Provide more specific error messages for common issues
     if (error instanceof Error) {
+      // Log the actual error for debugging
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+
       // Database connection errors
       if (error.message.includes('connect') || error.message.includes('ECONNREFUSED')) {
         return NextResponse.json(
-          { success: false, error: "Database connection failed. Please try again later." },
+          { success: false, error: "Database connection failed. Please try again later.", debug: envCheck },
           { status: 503 }
         );
       }
       // Prisma validation errors
       if (error.message.includes('Prisma')) {
         return NextResponse.json(
-          { success: false, error: "Database error. Please try again." },
+          { success: false, error: "Database error: " + error.message, debug: envCheck },
           { status: 500 }
         );
       }
     }
 
     return NextResponse.json(
-      { success: false, error: "Something went wrong. Please try again." },
+      {
+        success: false,
+        error: "Something went wrong. Please try again.",
+        details: error instanceof Error ? error.message : "Unknown error",
+        debug: envCheck
+      },
       { status: 500 }
     );
   }
