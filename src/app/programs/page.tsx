@@ -19,8 +19,8 @@ const PROGRAMS = [
     id: 'incubation',
     name: 'Straight As Incubation Program',
     slug: 'incubation',
-    description: 'Transform from an average student to a Straight As student in 90 days',
-    longDescription: 'A life-changing 3-month program that pairs struggling students with verified volunteers for daily accountability. Read 2 school notes daily, write summaries, and watch your grades transform.',
+    description: 'Transform from an average student to a Straight As student this semester',
+    longDescription: 'A life-changing semester-long program that pairs struggling students with verified volunteers for daily accountability. Read 2 school notes daily, write summaries, and transform your grades by exam time.',
     icon: GraduationCap,
     color: 'from-purple-500 to-fuchsia-500',
     bgColor: 'from-purple-900/30 to-fuchsia-900/30',
@@ -31,7 +31,7 @@ const PROGRAMS = [
       '2 notes/day reading habit',
       'Summary writing practice',
       'Exam grade goal tracking',
-      '90-day transformation cycle'
+      'Semester-long transformation'
     ],
     stats: [
       { label: 'Success Rate', value: '87%' },
@@ -39,7 +39,7 @@ const PROGRAMS = [
       { label: 'Active Students', value: '2,500+' },
       { label: 'Verified Volunteers', value: '450+' }
     ],
-    duration: '90 days',
+    duration: 'Per Semester',
     featured: true,
     status: 'active',
     spots: null,
@@ -245,7 +245,7 @@ export default function ProgramsPage() {
                     <h2 className="text-2xl font-bold mb-2">Straight As Incubation Program</h2>
                     <p className="text-gray-400 mb-4">
                       The Ben Carson simulation effect. Transform from a D-average student to Straight As 
-                      through daily study habits and verified volunteer mentorship. 90 days to transformation.
+                      through daily study habits and verified volunteer mentorship. One semester to transformation.
                     </p>
                     
                     <div className="flex flex-wrap gap-3 justify-center md:justify-start">

@@ -25,14 +25,21 @@ const ENROLLMENT_STEPS = [
   { id: 1, title: 'Personal Info', description: 'Your basic information' },
   { id: 2, title: 'Academic Status', description: 'Current grade level and school' },
   { id: 3, title: 'Exam Goals', description: 'Set your target grades' },
-  { id: 4, title: 'Commitment', description: 'Your pledge to the program' },
-  { id: 5, title: 'Review', description: 'Confirm your enrollment' },
+  { id: 4, title: 'Semester', description: 'Your current semester' },
+  { id: 5, title: 'Commitment', description: 'Your pledge to the program' },
+  { id: 6, title: 'Review', description: 'Confirm your enrollment' },
 ];
 
 // Available subjects for goals
 const SUBJECTS = ['English', 'Mathematics', 'Physics', 'Chemistry', 'Biology', 'Economics', 'Literature', 'Geography', 'History', 'Government'];
 
-// Current grade options
+// Semester/Term options
+const SEMESTER_TERMS = [
+  { value: '1', label: 'First Term' },
+  { value: '2', label: 'Second Term' },
+  { value: '3', label: 'Third Term' },
+];
+
 const CURRENT_GRADES = ['A', 'B', 'C', 'D', 'E', 'F'];
 const TARGET_GRADES = ['A', 'B', 'C'];
 
@@ -60,6 +67,12 @@ export default function IncubationProgramPage() {
     // Exam goals
     examGoals: [] as Array<{ subject: string; currentGrade: string; targetGrade: string }>,
     whyJoin: '',
+    
+    // Semester info
+    semesterTerm: '', // 1, 2, or 3
+    semesterYear: new Date().getFullYear().toString(),
+    weeksUntilExams: '',
+    examPeriod: '', // e.g., "June 2024"
     
     // Commitment
     studyTime: '',
@@ -127,6 +140,11 @@ export default function IncubationProgramPage() {
     }
 
     if (step === 4) {
+      if (!formData.semesterTerm) newErrors.semesterTerm = 'Select your current term';
+      if (!formData.weeksUntilExams) newErrors.weeksUntilExams = 'Estimate weeks until exams';
+    }
+
+    if (step === 5) {
       if (!formData.studyTime) newErrors.studyTime = 'Select your preferred study time';
       if (!formData.commitmentPledge) newErrors.commitmentPledge = 'You must accept the commitment pledge';
     }
@@ -198,7 +216,7 @@ export default function IncubationProgramPage() {
                   {[
                     { step: 1, text: 'Check your email for confirmation' },
                     { step: 2, text: 'Get matched with a volunteer mentor' },
-                    { step: 3, text: 'Start your 90-day transformation journey' },
+                    { step: 3, text: 'Start your semester transformation journey' },
                   ].map((item) => (
                     <div key={item.step} className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center text-xs font-bold">
@@ -254,7 +272,7 @@ export default function IncubationProgramPage() {
             </h1>
             
             <p className="text-gray-400 max-w-xl mx-auto">
-              Transform from an average student to Straight As in 90 days through daily study habits 
+              Transform from an average student to Straight As by exam time through daily study habits 
               and verified volunteer mentorship.
             </p>
           </motion.div>
@@ -506,8 +524,97 @@ export default function IncubationProgramPage() {
                   </motion.div>
                 )}
 
-                {/* Step 4: Commitment */}
+                {/* Step 4: Semester */}
                 {currentStep === 4 && (
+                  <motion.div
+                    key="step4"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                  >
+                    <h2 className="text-xl font-bold mb-4">Your Current Semester</h2>
+                    <p className="text-gray-400 text-sm mb-4">
+                      The program runs per semester, aligning with your school's exam schedule. Tell us about your current term.
+                    </p>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Current Term *</Label>
+                        <div className="grid grid-cols-3 gap-2 mt-2">
+                          {SEMESTER_TERMS.map(term => (
+                            <Button
+                              key={term.value}
+                              variant={formData.semesterTerm === term.value ? 'default' : 'outline'}
+                              onClick={() => updateFormData('semesterTerm', term.value)}
+                              className={formData.semesterTerm === term.value 
+                                ? 'bg-purple-600 hover:bg-purple-500' 
+                                : 'border-white/20 bg-white/5 hover:bg-white/10'
+                              }
+                            >
+                              {term.label}
+                            </Button>
+                          ))}
+                        </div>
+                        {errors.semesterTerm && <p className="text-red-400 text-sm mt-1">{errors.semesterTerm}</p>}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="semesterYear">Academic Year</Label>
+                        <Input
+                          id="semesterYear"
+                          type="number"
+                          value={formData.semesterYear}
+                          onChange={(e) => updateFormData('semesterYear', e.target.value)}
+                          placeholder="2024"
+                          className="bg-white/5 border-white/10 mt-1"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="weeksUntilExams">Weeks Until Exams *</Label>
+                        <Input
+                          id="weeksUntilExams"
+                          type="number"
+                          value={formData.weeksUntilExams}
+                          onChange={(e) => updateFormData('weeksUntilExams', e.target.value)}
+                          placeholder="e.g., 12"
+                          className="bg-white/5 border-white/10 mt-1"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">This helps us pace your transformation journey</p>
+                        {errors.weeksUntilExams && <p className="text-red-400 text-sm mt-1">{errors.weeksUntilExams}</p>}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="examPeriod">Exam Period (Optional)</Label>
+                        <Input
+                          id="examPeriod"
+                          value={formData.examPeriod}
+                          onChange={(e) => updateFormData('examPeriod', e.target.value)}
+                          placeholder="e.g., June 2024"
+                          className="bg-white/5 border-white/10 mt-1"
+                        />
+                      </div>
+                      
+                      <Card className="bg-cyan-500/10 border-cyan-500/20">
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            <Calendar className="w-5 h-5 text-cyan-400 mt-0.5" />
+                            <div>
+                              <h4 className="font-semibold text-sm">Semester-Based Approach</h4>
+                              <p className="text-xs text-gray-400 mt-1">
+                                Instead of a fixed 90-day program, we align with your school semester. 
+                                Your transformation is measured by exam results, not just days spent.
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 5: Commitment */}
+                {currentStep === 5 && (
                   <motion.div
                     key="step4"
                     initial={{ opacity: 0, x: 20 }}
@@ -555,7 +662,7 @@ export default function IncubationProgramPage() {
                           </li>
                           <li className="flex items-start gap-2">
                             <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                            I am committed to the 90-day transformation journey
+                            I am committed to this semester's transformation journey
                           </li>
                         </ul>
                         
@@ -584,8 +691,8 @@ export default function IncubationProgramPage() {
                   </motion.div>
                 )}
 
-                {/* Step 5: Review */}
-                {currentStep === 5 && (
+                {/* Step 6: Review */}
+                {currentStep === 6 && (
                   <motion.div
                     key="step5"
                     initial={{ opacity: 0, x: 20 }}
@@ -629,6 +736,18 @@ export default function IncubationProgramPage() {
                                 <Badge className="bg-green-500/20 text-green-300">{goal.targetGrade}</Badge>
                               </div>
                             ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card className="bg-white/5 border-white/10">
+                        <CardContent className="p-4">
+                          <h4 className="font-semibold text-sm text-gray-400 mb-2">Semester Info</h4>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <p><span className="text-gray-400">Term:</span> {SEMESTER_TERMS.find(t => t.value === formData.semesterTerm)?.label || 'Not selected'}</p>
+                            <p><span className="text-gray-400">Year:</span> {formData.semesterYear}</p>
+                            <p><span className="text-gray-400">Weeks to Exams:</span> {formData.weeksUntilExams || 'Not specified'}</p>
+                            <p><span className="text-gray-400">Exam Period:</span> {formData.examPeriod || 'Not specified'}</p>
                           </div>
                         </CardContent>
                       </Card>
@@ -704,7 +823,7 @@ export default function IncubationProgramPage() {
               { step: 1, title: 'Enroll', description: 'Complete enrollment form', icon: FileText },
               { step: 2, title: 'Get Paired', description: 'Matched with volunteer mentor', icon: Users },
               { step: 3, title: 'Daily Study', description: 'Read 2 notes, write summaries', icon: BookOpen },
-              { step: 4, title: 'Transform', description: 'Achieve Straight As in 90 days', icon: Award },
+              { step: 4, title: 'Transform', description: 'Achieve Straight As by exams', icon: Award },
             ].map((item) => (
               <div key={item.step} className="text-center">
                 <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-purple-500/20 flex items-center justify-center">

@@ -17,6 +17,10 @@ export async function POST(request: NextRequest) {
       currentTerm,
       examGoals,
       whyJoin,
+      semesterTerm,
+      semesterYear,
+      weeksUntilExams,
+      examPeriod,
       studyTime,
       commitmentPledge,
       parentConsent,
@@ -51,6 +55,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!semesterTerm || !weeksUntilExams) {
+      return NextResponse.json(
+        { success: false, error: 'Semester information is required' },
+        { status: 400 }
+      );
+    }
+
     // Find or create the Incubation Program
     let program = await prisma.program.findUnique({
       where: { slug: 'incubation' }
@@ -62,14 +73,16 @@ export async function POST(request: NextRequest) {
         data: {
           name: 'Straight As Incubation Program',
           slug: 'incubation',
-          description: 'Transform from an average student to a Straight As student in 90 days',
-          longDescription: 'A life-changing 3-month program that pairs struggling students with verified volunteers for daily accountability.',
+          description: 'Transform from an average student to a Straight As student this semester',
+          longDescription: 'A life-changing semester-long program that pairs struggling students with verified volunteers for daily accountability.',
           icon: '🎓',
           color: 'purple',
           status: 'active',
           featured: true,
           openEnrollment: true,
-          durationDays: 90,
+          durationType: 'semester',
+          semesterName: `Current Semester ${new Date().getFullYear()}`,
+          durationDays: 90, // Approximate
         }
       });
     }
@@ -108,15 +121,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create enrollment
+    // Create enrollment with semester data
     const enrollment = await prisma.programEnrollment.create({
       data: {
         programId: program.id,
         studentId: user.id,
         status: 'pending',
         pairingStatus: 'pending',
-        totalDays: 90,
+        totalDays: parseInt(weeksUntilExams) * 7, // Convert weeks to days
         examGoals: JSON.stringify(examGoals),
+        // Semester tracking
+        semesterName: `${semesterTerm === '1' ? 'First' : semesterTerm === '2' ? 'Second' : 'Third'} Term ${semesterYear}`,
+        semesterYear: parseInt(semesterYear) || new Date().getFullYear(),
+        semesterTerm: parseInt(semesterTerm) || 1,
+        semesterEndsAt: examPeriod ? new Date(examPeriod) : null,
       }
     });
 

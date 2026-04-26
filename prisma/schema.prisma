@@ -1647,8 +1647,16 @@ model Program {
   maxParticipants Int?
   currentParticipants Int @default(0)
   
-  // Duration
-  durationDays Int @default(90) // 3 months default
+  // Duration - Semester-based
+  durationType   String @default("semester") // semester, days, continuous
+  semesterName   String @default("Current Semester") // e.g., "First Semester 2024", "Second Semester 2025"
+  semesterStart  DateTime? // Start of the semester
+  semesterEnd    DateTime? // End of the semester (typically exam period)
+  examPeriodStart DateTime? // When exams begin
+  examPeriodEnd   DateTime? // When exams end
+  
+  // Legacy field for backwards compatibility
+  durationDays Int @default(90) // Approximate days in semester
   
   // Metadata
   createdAt DateTime @default(now())
@@ -1670,6 +1678,12 @@ model ProgramEnrollment {
   // Enrollment status
   status    String   @default("pending") // pending, active, paused, completed, dropped
   
+  // Semester tracking
+  semesterName    String @default("Current Semester") // e.g., "First Semester 2024"
+  semesterYear    Int    @default(2024)
+  semesterTerm    Int    @default(1) // 1 = First Term, 2 = Second Term, 3 = Third Term
+  enrolledSemesterWeek Int @default(1) // Which week of semester student enrolled
+  
   // Volunteer pairing
   volunteerId   String?
   pairedAt      DateTime?
@@ -1677,11 +1691,14 @@ model ProgramEnrollment {
   
   // Progress tracking
   currentDay    Int     @default(0)
-  totalDays     Int     @default(90)
+  totalDays     Int     @default(90) // Approximate days until exams
+  currentWeek   Int     @default(1) // Current week in the semester
   notesRead     Int     @default(0)
   summariesWritten Int  @default(0)
   goalsSet      Int     @default(0)
   goalsAchieved Int     @default(0)
+  streakDays    Int     @default(0) // Consecutive days of study
+  bestStreak    Int     @default(0) // Best streak achieved
   
   // Exam goals (JSON: [{subject: "English", currentGrade: "D", targetGrade: "A"}])
   examGoals     String  @default("[]")
@@ -1691,6 +1708,7 @@ model ProgramEnrollment {
   startedAt     DateTime?
   completedAt   DateTime?
   pausedAt      DateTime?
+  semesterEndsAt DateTime? // When this enrollment's semester ends
   
   // Milestone tracking
   completedMilestones String @default("[]") // JSON array of milestone IDs
@@ -1701,6 +1719,7 @@ model ProgramEnrollment {
   @@index([studentId])
   @@index([status])
   @@index([volunteerId])
+  @@index([semesterYear, semesterTerm])
 }
 
 // Program Milestone - Achievement milestones within a program
