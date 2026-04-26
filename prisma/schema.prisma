@@ -1623,3 +1623,259 @@ model UserCosmetic {
   @@index([userId])
   @@index([itemType])
 }
+
+// ============================================
+// STRAIGHT AS INCUBATION PROGRAM MODELS
+// ============================================
+
+// Program Definition - Umbrella for all programs
+model Program {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique // e.g., "incubation", "career-placement"
+  description String
+  longDescription String?
+  icon        String // Emoji or icon identifier
+  color       String @default("purple") // Theme color
+  
+  // Program status
+  status      String   @default("active") // active, paused, ended
+  featured    Boolean  @default(false)
+  
+  // Enrollment settings
+  openEnrollment Boolean @default(true)
+  maxParticipants Int?
+  currentParticipants Int @default(0)
+  
+  // Duration
+  durationDays Int @default(90) // 3 months default
+  
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  enrollments ProgramEnrollment[]
+  milestones  ProgramMilestone[]
+  
+  @@index([status])
+  @@index([featured])
+}
+
+// Program Enrollment - Student enrollment in a program
+model ProgramEnrollment {
+  id        String   @id @default(cuid())
+  programId String
+  studentId String
+  
+  // Enrollment status
+  status    String   @default("pending") // pending, active, paused, completed, dropped
+  
+  // Volunteer pairing
+  volunteerId   String?
+  pairedAt      DateTime?
+  pairingStatus String @default("pending") // pending, matched, unmatched
+  
+  // Progress tracking
+  currentDay    Int     @default(0)
+  totalDays     Int     @default(90)
+  notesRead     Int     @default(0)
+  summariesWritten Int  @default(0)
+  goalsSet      Int     @default(0)
+  goalsAchieved Int     @default(0)
+  
+  // Exam goals (JSON: [{subject: "English", currentGrade: "D", targetGrade: "A"}])
+  examGoals     String  @default("[]")
+  
+  // Timestamps
+  enrolledAt    DateTime @default(now())
+  startedAt     DateTime?
+  completedAt   DateTime?
+  pausedAt      DateTime?
+  
+  // Milestone tracking
+  completedMilestones String @default("[]") // JSON array of milestone IDs
+  
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  
+  @@unique([programId, studentId])
+  @@index([studentId])
+  @@index([status])
+  @@index([volunteerId])
+}
+
+// Program Milestone - Achievement milestones within a program
+model ProgramMilestone {
+  id        String   @id @default(cuid())
+  programId String
+  
+  name        String
+  description String
+  day         Int // Day in the program when this milestone should be reached
+  icon        String?
+  
+  // Requirements
+  notesRequired    Int @default(0)
+  summariesRequired Int @default(0)
+  
+  // Rewards
+  xpReward    Int @default(0)
+  badgeId     String?
+  
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  
+  @@unique([programId, day])
+  @@index([programId])
+}
+
+// Verified Volunteer - Volunteers for the Incubation Program
+model VerifiedVolunteer {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  
+  // Verification
+  status      String @default("pending") // pending, verified, suspended
+  verifiedAt  DateTime?
+  verifiedBy  String?
+  
+  // Volunteer profile
+  bio         String?
+  subjects    String @default("[]") // Subjects they can mentor in
+  maxStudents Int    @default(3) // Max students they can mentor
+  
+  // Stats
+  totalStudentsHelped Int @default(0)
+  activeStudents      Int @default(0)
+  totalSessions       Int @default(0)
+  avgRating           Float @default(0)
+  
+  // Availability
+  availableDays   String @default("[]") // ["monday", "wednesday", "friday"]
+  availableHours  String @default("[]") // ["9am-12pm", "2pm-5pm"]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([status])
+  @@index([userId])
+}
+
+// Daily Study Log - Track student daily study activities
+model DailyStudyLog {
+  id          String   @id @default(cuid())
+  enrollmentId String
+  date        DateTime
+  
+  // Notes read today (2 per day requirement)
+  notesRead       Int @default(0)
+  noteTitles      String @default("[]") // JSON: ["Note 1 title", "Note 2 title"]
+  
+  // Summaries written
+  summariesWritten Int @default(0)
+  summaries        String @default("[]") // JSON: [{title: "...", content: "..."}]
+  
+  // Time spent
+  studyMinutes    Int @default(0)
+  
+  // Volunteer interaction
+  volunteerInteraction Boolean @default(false)
+  volunteerNotes       String?
+  
+  // Self-assessment
+  mood            Int @default(3) // 1-5 scale
+  comprehensionScore Int @default(0) // 0-100
+  
+  // Completion
+  completed       Boolean @default(false)
+  completedAt     DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([enrollmentId, date])
+  @@index([enrollmentId])
+  @@index([date])
+}
+
+// Study Note - School notes uploaded/read by students
+model StudyNote {
+  id          String   @id @default(cuid())
+  studentId   String
+  subject     String
+  topic       String
+  title       String
+  content     String
+  
+  // Status
+  read        Boolean  @default(false)
+  readAt      DateTime?
+  
+  // Summary
+  hasSummary  Boolean  @default(false)
+  summaryContent String?
+  summaryWrittenAt DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([studentId])
+  @@index([subject])
+  @@index([read])
+}
+
+// Volunteer Session - Log of volunteer-student interactions
+model VolunteerSession {
+  id          String   @id @default(cuid())
+  volunteerId String
+  studentId   String
+  enrollmentId String
+  
+  // Session details
+  scheduledAt DateTime
+  startedAt   DateTime?
+  endedAt     DateTime?
+  duration    Int @default(0) // minutes
+  
+  // Status
+  status      String @default("scheduled") // scheduled, in_progress, completed, cancelled
+  
+  // Notes
+  volunteerNotes String?
+  studentNotes   String?
+  
+  // Rating
+  studentRating   Int? // 1-5
+  studentFeedback String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([volunteerId])
+  @@index([studentId])
+  @@index([status])
+}
+
+// Exam Goal Tracker - Track student exam grade goals
+model ExamGoalTracker {
+  id          String   @id @default(cuid())
+  enrollmentId String
+  subject     String
+  
+  // Current state
+  currentGrade    String // D, C, B, A
+  targetGrade     String // A
+  
+  // Progress tracking
+  mockTestScores  String @default("[]") // JSON: [{date, score, grade}]
+  predictedGrade  String?
+  
+  // Status
+  achieved        Boolean @default(false)
+  achievedAt      DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([enrollmentId, subject])
+  @@index([enrollmentId])
+  @@index([achieved])
+}

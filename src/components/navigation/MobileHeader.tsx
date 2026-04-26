@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import {
   Swords, Menu, X, Home, Brain, Video, Users, Trophy,
   Crown, Flame, Star, Settings, LogOut, ChevronRight,
-  Bot, Radio, Search, Bell, MessageCircle, Globe
+  Bot, Radio, Search, Bell, MessageCircle, Globe, GraduationCap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,6 +52,7 @@ const NAV_ITEMS = [
   { href: '/ai-tutor', label: 'AI Tutor', icon: Brain },
   { href: '/videos', label: 'Videos', icon: Video },
   { href: '/social', label: 'Social', icon: Users },
+  { href: '/programs', label: 'Programs', icon: GraduationCap },
   { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
 ];
 

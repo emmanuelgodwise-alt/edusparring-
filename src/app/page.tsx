@@ -258,6 +258,7 @@ function LandingPage() {
                 <li><Link href="/ai-tutor" className="hover:text-purple-400">AI Tutor</Link></li>
                 <li><Link href="/multiplayer" className="hover:text-purple-400">Multiplayer</Link></li>
                 <li><Link href="/videos" className="hover:text-purple-400">Video Lessons</Link></li>
+                <li><Link href="/programs" className="hover:text-purple-400">Programs</Link></li>
                 <li><Link href="/careers" className="hover:text-purple-400">Careers</Link></li>
                 <li><Link href="/social" className="hover:text-purple-400">Social</Link></li>
                 <li><Link href="/sparring" className="hover:text-purple-400">Sparring</Link></li>
