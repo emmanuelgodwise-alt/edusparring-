@@ -118,6 +118,25 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Registration error:", error);
+
+    // Provide more specific error messages for common issues
+    if (error instanceof Error) {
+      // Database connection errors
+      if (error.message.includes('connect') || error.message.includes('ECONNREFUSED')) {
+        return NextResponse.json(
+          { success: false, error: "Database connection failed. Please try again later." },
+          { status: 503 }
+        );
+      }
+      // Prisma validation errors
+      if (error.message.includes('Prisma')) {
+        return NextResponse.json(
+          { success: false, error: "Database error. Please try again." },
+          { status: 500 }
+        );
+      }
+    }
+
     return NextResponse.json(
       { success: false, error: "Something went wrong. Please try again." },
       { status: 500 }
