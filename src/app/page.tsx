@@ -57,17 +57,11 @@ function getKRTier(kr: number): { tier: string; color: string; nextTier: string;
   return { tier: 'Elite', color: 'text-yellow-400', nextTier: 'Legend', progress: Math.min(100, (kr - 1800) / 200 * 100) };
 }
 
-// Landing Page for non-authenticated users
-function LandingPage() {
+// Public Header for unauthenticated users
+function PublicHeader() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white">
-      {/* Background effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
-      </div>
-
-      {/* Header */}
+    <>
+      {/* Top Header - Logo and Hamburger */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-black/30 border-b border-white/10">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -82,221 +76,81 @@ function LandingPage() {
             </h1>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link href="/auth/signin">
-              <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/10">
-                Sign In
+          {/* Hamburger Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-white">
+                <Menu className="w-6 h-6" />
               </Button>
-            </Link>
-            <Link href="/auth/signup">
-              <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500">
-                Get Started
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 bg-slate-900 border-white/10">
+              <DropdownMenuItem asChild>
+                <Link href="/onboarding" className="cursor-pointer">
+                  <HelpCircle className="w-4 h-4 mr-2" />
+                  Onboarding
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/programs" className="cursor-pointer">
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Programs
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/pricing" className="cursor-pointer">
+                  <Crown className="w-4 h-4 mr-2" />
+                  Pricing
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/safety" className="cursor-pointer">
+                  <Shield className="w-4 h-4 mr-2" />
+                  Safety
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuItem asChild>
+                <Link href="/auth/signin" className="cursor-pointer">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Sign In
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/auth/signup" className="cursor-pointer">
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Sign Up
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative container mx-auto px-4 py-20 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 3, repeat: Infinity }}
-            className="mb-8"
-          >
-            <div className="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center shadow-2xl shadow-purple-500/30">
-              <Swords className="w-12 h-12 text-white" />
-            </div>
-          </motion.div>
-
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
-              Turn Knowledge Into
-            </span>
-            <br />
-            <span className="text-white">Competitive Battles</span>
-          </h1>
-
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            Practice lessons, prepare for exams, and compete with students worldwide in real-time knowledge battles.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth/signup">
-              <Button size="lg" className="w-full sm:w-auto py-6 px-8 text-lg font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 shadow-lg shadow-purple-500/25">
-                Start Learning Free
-                <ArrowRight className="w-5 h-5 ml-2" />
+      {/* Secondary Nav - Onboarding | Sign In | Sign Up */}
+      <nav className="sticky top-[57px] z-40 backdrop-blur-xl bg-black/20 border-b border-white/5">
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex items-center justify-center gap-1">
+            <Link href="/onboarding">
+              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10">
+                Onboarding
               </Button>
             </Link>
+            <span className="text-gray-600 mx-1">|</span>
             <Link href="/auth/signin">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto py-6 px-8 text-lg border-white/20 bg-white/5 hover:bg-white/10">
-                I Have an Account
+              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10">
+                Sign In
               </Button>
             </Link>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Features Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-3 gap-8">
-          {[
-            {
-              icon: Zap,
-              title: 'Real-Time Battles',
-              description: 'Compete head-to-head with students worldwide in exciting 15-second question rounds.',
-              color: 'from-purple-500 to-fuchsia-500'
-            },
-            {
-              icon: Trophy,
-              title: 'Climb the Ranks',
-              description: 'Earn Knowledge Rating (KR) points and climb from Beginner to Elite tier.',
-              color: 'from-yellow-500 to-orange-500'
-            },
-            {
-              icon: Brain,
-              title: 'AI-Powered Learning',
-              description: 'Get personalized coaching feedback powered by advanced AI after every match.',
-              color: 'from-cyan-500 to-blue-500'
-            },
-            {
-              icon: Globe,
-              title: 'Global Community',
-              description: 'Connect with students from around the world. Make friends and challenge them.',
-              color: 'from-green-500 to-emerald-500'
-            },
-            {
-              icon: Award,
-              title: 'Tournaments',
-              description: 'Join exciting tournaments with prize pools and become a champion.',
-              color: 'from-red-500 to-pink-500'
-            },
-            {
-              icon: BookOpen,
-              title: 'Multiple Subjects',
-              description: 'Math, Physics, Chemistry, Biology, History, Geography, and more.',
-              color: 'from-indigo-500 to-purple-500'
-            }
-          ].map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors h-full">
-                <CardHeader>
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4`}>
-                    <feature.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-400">{feature.description}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {[
-            { label: 'Active Students', value: '10K+' },
-            { label: 'Questions Answered', value: '1M+' },
-            { label: 'Countries', value: '50+' },
-            { label: 'Subjects', value: '8' }
-          ].map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <p className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                {stat.value}
-              </p>
-              <p className="text-gray-400 mt-2">{stat.label}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="container mx-auto px-4 py-16">
-        <Card className="bg-gradient-to-r from-purple-900/50 to-cyan-900/50 border-purple-500/20 text-center">
-          <CardContent className="py-12">
-            <h2 className="text-3xl font-bold mb-4">Ready to Start Your Journey?</h2>
-            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-              Join thousands of students who are already learning and competing on EduSparring.
-            </p>
+            <span className="text-gray-600 mx-1">|</span>
             <Link href="/auth/signup">
-              <Button size="lg" className="py-6 px-8 text-lg font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 shadow-lg shadow-purple-500/25">
-                Create Free Account
-                <ArrowRight className="w-5 h-5 ml-2" />
+              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10">
+                Sign Up
               </Button>
             </Link>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/10 py-8">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h3 className="font-semibold text-white mb-3">Platform</h3>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/ai-tutor" className="hover:text-purple-400">AI Tutor</Link></li>
-                <li><Link href="/multiplayer" className="hover:text-purple-400">Multiplayer</Link></li>
-                <li><Link href="/videos" className="hover:text-purple-400">Video Lessons</Link></li>
-                <li><Link href="/programs" className="hover:text-purple-400">Programs</Link></li>
-                <li><Link href="/careers" className="hover:text-purple-400">Careers</Link></li>
-                <li><Link href="/social" className="hover:text-purple-400">Social</Link></li>
-                <li><Link href="/sparring" className="hover:text-purple-400">Sparring</Link></li>
-                <li><Link href="/leaderboard" className="hover:text-purple-400">Leaderboard</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-white mb-3">Safety</h3>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/safety" className="hover:text-purple-400">Safety Features</Link></li>
-                <li><Link href="/trust" className="hover:text-purple-400">Trust & Security</Link></li>
-                <li><Link href="/verify" className="hover:text-purple-400">Student Verification</Link></li>
-                <li><Link href="/guardian" className="hover:text-purple-400">Guardian Dashboard</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-white mb-3">Partners</h3>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/institutions" className="hover:text-purple-400">Schools & Governments</Link></li>
-                <li><Link href="/employer" className="hover:text-purple-400">Employer Partners</Link></li>
-                <li><Link href="/schools" className="hover:text-purple-400">School Partnership</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-white mb-3">Pricing</h3>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/pricing" className="hover:text-purple-400">Plans & Pricing</Link></li>
-                <li><Link href="/pricing#students" className="hover:text-purple-400">Student Plans</Link></li>
-                <li><Link href="/institutions#pricing" className="hover:text-purple-400">Institutional Plans</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="text-center text-gray-400 pt-4 border-t border-white/10">
-            <p>&copy; 2024 EduSparring. All rights reserved.</p>
           </div>
         </div>
-      </footer>
-    </div>
+      </nav>
+    </>
   );
 }
 
@@ -315,13 +169,10 @@ export default function Home() {
     showFriendsModal, setShowFriendsModal, friends, setFriends
   } = useAppStore();
 
-  const [checkingOnboarding, setCheckingOnboarding] = useState(false);
   const { isOpen: searchOpen, openSearch, closeSearch } = useGlobalSearch();
 
   // Immediately set loading to false on mount - show content right away
-  // This ensures the landing page is visible even if auth is slow
   useEffect(() => {
-    // Small delay to prevent flash, then show content
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 100);
@@ -335,14 +186,9 @@ export default function Home() {
     }
   }, [authLoading, setIsLoading]);
 
-  // Initialize user from auth when authenticated
+  // Initialize user from auth when authenticated (NO onboarding redirect)
   useEffect(() => {
     if (isAuthenticated && authUser) {
-      // Check localStorage first for onboarding status (works for both authenticated and anonymous users)
-      const localStorageOnboarding = typeof window !== 'undefined' 
-        ? localStorage.getItem('edusparring_onboarding_completed') 
-        : null;
-      
       // Fetch full user data from database
       const fetchUserData = async () => {
         try {
@@ -350,18 +196,6 @@ export default function Home() {
           const data = await res.json();
           if (data.success && data.user) {
             setUser(data.user);
-            
-            // Check onboarding status - only redirect if:
-            // - NOT completed in DB
-            // - NOT skipped 5+ times (user is familiar with app)
-            // - NOT completed in localStorage
-            const skipCount = data.user.onboardingSkipCount ?? 0;
-            const hasSkippedEnough = skipCount >= 5;
-            
-            if (!data.user.hasCompletedOnboarding && !hasSkippedEnough && localStorageOnboarding !== 'true') {
-              router.push('/onboarding');
-              return;
-            }
           } else {
             // Create basic user from auth data
             setUser({
@@ -382,11 +216,6 @@ export default function Home() {
               subjects: [],
               achievements: [],
             });
-            // Only redirect to onboarding if not completed in localStorage
-            if (localStorageOnboarding !== 'true') {
-              router.push('/onboarding');
-              return;
-            }
           }
         } catch (error) {
           console.error('Failed to fetch user data:', error);
@@ -409,15 +238,11 @@ export default function Home() {
             subjects: [],
             achievements: [],
           });
-        } finally {
-          setCheckingOnboarding(false);
         }
       };
       fetchUserData();
-    } else {
-      setCheckingOnboarding(false);
     }
-  }, [isAuthenticated, authUser, setUser, router]);
+  }, [isAuthenticated, authUser, setUser]);
 
   // Initialize mock data
   useEffect(() => {
@@ -515,89 +340,103 @@ export default function Home() {
   };
 
   // Show loading state only if we're still initializing
-  // Don't wait for auth - show landing page quickly for better UX
-  if (isLoading || (isAuthenticated && checkingOnboarding)) {
+  if (isLoading) {
     return <LoadingScreen />;
   }
 
-  // Show landing page if not authenticated
-  if (!isAuthenticated) {
-    return <LandingPage />;
-  }
-
+  // PUBLIC SPOOLING PAGE - Show to everyone (authenticated or not)
+  // Unauthenticated users see the UI but need to sign in to play
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white">
-      {/* Header - Using MobileHeader with Hamburger Menu */}
-      <MobileHeader
-        user={user ? {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          knowledgeRating: user.knowledgeRating,
-          points: user.points,
-          currentStreak: user.currentStreak,
-          avatar: user.avatar,
-        } : null}
-        title="EduSparring"
-        actions={liveMatches.length > 0 ? [
-          {
-            label: `${liveMatches.length} Live Battles`,
-            icon: <Radio className="w-5 h-5 text-red-400 animate-pulse" />,
-            href: '/multiplayer',
-          }
-        ] : []}
-      />
+      {/* Background effects */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+      </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
-        <AnimatePresence mode="wait">
-          {match && match.status === 'active' ? (
-            <BattleArena />
-          ) : (
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              {activeTab === 'home' && <HomePage onStartMatch={startQuickMatch} isSearching={isSearchingMatch} />}
-              {activeTab === 'dashboard' && <Dashboard user={user} />}
-              {activeTab === 'leaderboard' && <LeaderboardView />}
-              {activeTab === 'profile' && <ProfileView user={user} />}
-              {activeTab === 'settings' && <SettingsView />}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </main>
+      <div className="relative z-10">
+        {/* Header - Different for authenticated vs unauthenticated */}
+        {isAuthenticated ? (
+          <MobileHeader
+            user={user ? {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              knowledgeRating: user.knowledgeRating,
+              points: user.points,
+              currentStreak: user.currentStreak,
+              avatar: user.avatar,
+            } : null}
+            title="EduSparring"
+            actions={liveMatches.length > 0 ? [
+              {
+                label: `${liveMatches.length} Live Battles`,
+                icon: <Radio className="w-5 h-5 text-red-400 animate-pulse" />,
+                href: '/multiplayer',
+              }
+            ] : []}
+          />
+        ) : (
+          <PublicHeader />
+        )}
 
-      {/* Bottom Navigation */}
-      {!match && (
-        <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-xl bg-black/50 border-t border-white/10">
-          <div className="container mx-auto px-4 py-2">
-            <div className="flex items-center justify-around">
-              {[
-                { id: 'home', icon: Trophy, label: 'Battle' },
-                { id: 'dashboard', icon: BarChart3, label: 'Stats' },
-                { id: 'leaderboard', icon: Trophy, label: 'Ranks' },
-                { id: 'profile', icon: User, label: 'Profile' }
-              ].map(({ id, icon: Icon, label }) => (
-                <button
-                  key={id}
-                  onClick={() => setActiveTab(id as typeof activeTab)}
-                  className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-all ${
-                    activeTab === id
-                      ? 'text-purple-400 bg-purple-500/20'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="text-xs font-medium">{label}</span>
-                </button>
-              ))}
+        {/* Main Content */}
+        <main className="container mx-auto px-4 py-6">
+          <AnimatePresence mode="wait">
+            {match && match.status === 'active' ? (
+              <BattleArena />
+            ) : (
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                {activeTab === 'home' && (
+                  <HomePage 
+                    onStartMatch={startQuickMatch} 
+                    isSearching={isSearchingMatch}
+                    isAuthenticated={isAuthenticated}
+                  />
+                )}
+                {activeTab === 'dashboard' && <Dashboard user={user} />}
+                {activeTab === 'leaderboard' && <LeaderboardView />}
+                {activeTab === 'profile' && <ProfileView user={user} />}
+                {activeTab === 'settings' && <SettingsView />}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </main>
+
+        {/* Bottom Navigation - Only for authenticated users */}
+        {isAuthenticated && !match && (
+          <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-xl bg-black/50 border-t border-white/10">
+            <div className="container mx-auto px-4 py-2">
+              <div className="flex items-center justify-around">
+                {[
+                  { id: 'home', icon: Trophy, label: 'Battle' },
+                  { id: 'dashboard', icon: BarChart3, label: 'Stats' },
+                  { id: 'leaderboard', icon: Trophy, label: 'Ranks' },
+                  { id: 'profile', icon: User, label: 'Profile' }
+                ].map(({ id, icon: Icon, label }) => (
+                  <button
+                    key={id}
+                    onClick={() => setActiveTab(id as typeof activeTab)}
+                    className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-all ${
+                      activeTab === id
+                        ? 'text-purple-400 bg-purple-500/20'
+                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="text-xs font-medium">{label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        </nav>
-      )}
+          </nav>
+        )}
+      </div>
 
       {/* Match Result Modal */}
       <AnimatePresence>
@@ -710,8 +549,8 @@ function LoadingScreen() {
   );
 }
 
-// Home Page Component - Sparring Centered
-function HomePage({ onStartMatch, isSearching }: { onStartMatch: () => void; isSearching: boolean }) {
+// Home Page Component - Sparring Centered (PUBLIC - visible to all)
+function HomePage({ onStartMatch, isSearching, isAuthenticated }: { onStartMatch: () => void; isSearching: boolean; isAuthenticated: boolean }) {
   const { user, selectedSubject, setSelectedSubject, tournaments, liveMatches } = useAppStore();
   const subjects = ['Math', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'];
 
@@ -736,12 +575,15 @@ function HomePage({ onStartMatch, isSearching }: { onStartMatch: () => void; isS
         </h1>
         
         <p className="text-sm text-gray-400">
-          Challenge the Bot or find a Student to battle!
+          {isAuthenticated 
+            ? "Challenge the Bot or find a Student to battle!" 
+            : "Sign in to start battling and competing with students worldwide!"
+          }
         </p>
       </motion.div>
 
-      {/* User Stats */}
-      {user && (
+      {/* User Stats - Only for authenticated users */}
+      {isAuthenticated && user && (
         <div className="grid grid-cols-3 gap-2">
           <Card className="bg-white/5 border-white/10">
             <CardContent className="p-2 text-center">
@@ -767,14 +609,16 @@ function HomePage({ onStartMatch, isSearching }: { onStartMatch: () => void; isS
         </div>
       )}
 
-      {/* MAIN SPARRING SECTION - Featured Prominently */}
+      {/* MAIN SPARRING SECTION */}
       <Card className="bg-gradient-to-br from-purple-900/30 to-cyan-900/30 border-purple-500/30 overflow-hidden">
         <CardHeader className="pb-2 text-center">
           <CardTitle className="text-xl flex items-center justify-center gap-2">
             <Swords className="w-6 h-6 text-purple-400" />
             Sparring Arena
           </CardTitle>
-          <p className="text-sm text-gray-400">Choose your battle mode</p>
+          <p className="text-sm text-gray-400">
+            {isAuthenticated ? "Choose your battle mode" : "Sign in to enter the arena"}
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Subject Selection */}
@@ -799,34 +643,61 @@ function HomePage({ onStartMatch, isSearching }: { onStartMatch: () => void; isS
             </div>
           </div>
 
-          {/* Two Main Sparring Buttons */}
-          <div className="grid grid-cols-1 gap-3">
-            {/* Play with Bot - Primary */}
-            <Link href="/ai-tutor">
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  className="w-full py-8 text-lg font-semibold bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 border-0 shadow-lg shadow-cyan-500/25"
-                >
-                  <Bot className="w-6 h-6 mr-3" />
-                  Play with Bot
-                  <span className="ml-2 text-xs opacity-75">Practice Mode</span>
-                </Button>
-              </motion.div>
-            </Link>
+          {/* Two Main Sparring Buttons - Or Sign In Prompt */}
+          {isAuthenticated ? (
+            <div className="grid grid-cols-1 gap-3">
+              {/* Play with Bot - Primary */}
+              <Link href="/ai-tutor">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    className="w-full py-8 text-lg font-semibold bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 border-0 shadow-lg shadow-cyan-500/25"
+                  >
+                    <Bot className="w-6 h-6 mr-3" />
+                    Play with Bot
+                    <span className="ml-2 text-xs opacity-75">Practice Mode</span>
+                  </Button>
+                </motion.div>
+              </Link>
 
-            {/* Play with Student - Secondary */}
-            <Link href="/multiplayer">
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  className="w-full py-8 text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 border-0 shadow-lg shadow-purple-500/25"
-                >
-                  <Users className="w-6 h-6 mr-3" />
-                  Play with Student
-                  <span className="ml-2 text-xs opacity-75">Live Match</span>
-                </Button>
-              </motion.div>
-            </Link>
-          </div>
+              {/* Play with Student - Secondary */}
+              <Link href="/multiplayer">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    className="w-full py-8 text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 border-0 shadow-lg shadow-purple-500/25"
+                  >
+                    <Users className="w-6 h-6 mr-3" />
+                    Play with Student
+                    <span className="ml-2 text-xs opacity-75">Live Match</span>
+                  </Button>
+                </motion.div>
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3">
+              {/* Sign In to Play */}
+              <Link href="/auth/signin">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    className="w-full py-8 text-lg font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 border-0 shadow-lg shadow-purple-500/25"
+                  >
+                    <LogIn className="w-6 h-6 mr-3" />
+                    Sign In to Play
+                  </Button>
+                </motion.div>
+              </Link>
+              <Link href="/auth/signup">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    variant="outline"
+                    className="w-full py-6 text-lg font-semibold border-white/20 bg-white/5 hover:bg-white/10"
+                  >
+                    <UserPlus className="w-6 h-6 mr-3" />
+                    Create Free Account
+                  </Button>
+                </motion.div>
+              </Link>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -866,11 +737,13 @@ function HomePage({ onStartMatch, isSearching }: { onStartMatch: () => void; isS
         </Link>
       </div>
 
-      {/* Daily Streak & Quests Section */}
-      <div className="space-y-3">
-        <StreakDisplay />
-        <DailyQuests />
-      </div>
+      {/* Daily Streak & Quests Section - Only for authenticated users */}
+      {isAuthenticated && (
+        <div className="space-y-3">
+          <StreakDisplay />
+          <DailyQuests />
+        </div>
+      )}
 
       {/* Live Matches */}
       {liveMatches.length > 0 && (
@@ -910,9 +783,11 @@ function HomePage({ onStartMatch, isSearching }: { onStartMatch: () => void; isS
                     <Eye className="w-3 h-3" />
                     {match.spectatorCount}
                   </div>
-                  <Button size="sm" variant="outline" className="border-white/20 bg-white/5">
-                    Spectate
-                  </Button>
+                  {isAuthenticated && (
+                    <Button size="sm" variant="outline" className="border-white/20 bg-white/5">
+                      Spectate
+                    </Button>
+                  )}
                 </div>
               </motion.div>
             ))}
@@ -920,6 +795,7 @@ function HomePage({ onStartMatch, isSearching }: { onStartMatch: () => void; isS
         </Card>
       )}
 
+      {/* Tournaments - Show preview for all */}
       {tournaments.length > 0 && (
         <Card className="bg-white/5 border-white/10">
           <CardHeader className="pb-2">
@@ -961,9 +837,11 @@ function HomePage({ onStartMatch, isSearching }: { onStartMatch: () => void; isS
                     <Trophy className="w-4 h-4" />
                     <span className="font-semibold">{tournament.prizePool.toLocaleString()} pts</span>
                   </div>
-                  <Button size="sm" className="bg-gradient-to-r from-purple-600 to-cyan-600">
-                    {tournament.status === 'active' ? 'Watch' : 'Join'}
-                  </Button>
+                  {isAuthenticated && (
+                    <Button size="sm" className="bg-gradient-to-r from-purple-600 to-cyan-600">
+                      {tournament.status === 'active' ? 'Watch' : 'Join'}
+                    </Button>
+                  )}
                 </div>
               </motion.div>
             ))}
@@ -971,6 +849,7 @@ function HomePage({ onStartMatch, isSearching }: { onStartMatch: () => void; isS
         </Card>
       )}
 
+      {/* How to Play */}
       <Card className="bg-gradient-to-br from-purple-900/30 to-cyan-900/30 border-purple-500/20">
         <CardHeader>
           <CardTitle className="text-lg">How to Play</CardTitle>
@@ -1271,16 +1150,16 @@ function FeedbackView({
           return (
             <div
               key={index}
-              className={`p-4 rounded-xl border ${
+              className={`p-4 rounded-xl border transition-all ${
                 isCorrect
-                  ? 'bg-green-500/20 border-green-500'
+                  ? 'bg-green-500/30 border-green-500'
                   : isSelected
-                  ? 'bg-red-500/20 border-red-500'
-                  : 'bg-white/5 border-white/10'
+                    ? 'bg-red-500/30 border-red-500'
+                    : 'bg-white/5 border-white/10'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span>{option}</span>
+                <span className="font-medium">{option}</span>
                 {isCorrect && <CheckCircle2 className="w-5 h-5 text-green-400" />}
                 {isSelected && !isCorrect && <XCircle className="w-5 h-5 text-red-400" />}
               </div>
@@ -1289,37 +1168,24 @@ function FeedbackView({
         })}
       </div>
 
-      <div className={`p-4 rounded-xl ${
-        feedback.isCorrect
-          ? 'bg-green-500/20 border border-green-500/30'
-          : 'bg-red-500/20 border border-red-500/30'
-      }`}>
-        <div className="flex items-center gap-2 mb-2">
-          {feedback.isCorrect ? (
-            <>
-              <CheckCircle2 className="w-5 h-5 text-green-400" />
-              <span className="font-semibold text-green-400">Correct!</span>
-            </>
-          ) : (
-            <>
-              <XCircle className="w-5 h-5 text-red-400" />
-              <span className="font-semibold text-red-400">Incorrect</span>
-            </>
-          )}
-        </div>
+      <div className={`p-4 rounded-xl ${feedback.isCorrect ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+        <p className="text-sm font-medium mb-1">
+          {feedback.isCorrect ? '✓ Correct!' : '✗ Incorrect'}
+        </p>
         <p className="text-sm text-gray-300">{feedback.explanation}</p>
-      </div>
-
-      <div className="text-center text-sm text-gray-400">
-        Opponent {feedback.opponentCorrect ? 'answered correctly ✓' : 'answered incorrectly ✗'}
+        <div className="mt-2 flex items-center gap-2 text-xs">
+          <span className={feedback.opponentCorrect ? 'text-green-400' : 'text-red-400'}>
+            Opponent: {feedback.opponentCorrect ? 'Correct' : 'Incorrect'}
+          </span>
+        </div>
       </div>
 
       <Button
         onClick={onContinue}
-        className="w-full py-5 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500"
+        className="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500"
       >
         {isLastRound ? 'See Results' : 'Next Question'}
-        <ChevronRight className="w-4 h-4 ml-2" />
+        <ChevronRight className="w-4 h-4 ml-1" />
       </Button>
     </motion.div>
   );
@@ -1333,85 +1199,91 @@ function MatchResultModal({
   onViewFeedback
 }: {
   match: any;
-  user: UserType | null;
+  user: any;
   onClose: () => void;
   onViewFeedback: () => void;
 }) {
-  const won = match.winner === 'player';
-  const draw = match.winner === 'draw';
+  const isWinner = match.winner === 'player';
+  const isDraw = match.winner === 'draw';
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-md bg-gradient-to-br from-slate-900 to-purple-950 rounded-2xl p-6 border border-purple-500/20"
+        className="bg-gradient-to-br from-slate-900 to-purple-900 rounded-2xl p-6 max-w-md w-full border border-white/10"
       >
         <div className="text-center mb-6">
-          {won ? (
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 0.5, repeat: 3 }}
-            >
-              <Trophy className="w-20 h-20 mx-auto text-yellow-400" />
-            </motion.div>
-          ) : draw ? (
-            <Medal className="w-20 h-20 mx-auto text-gray-400" />
-          ) : (
-            <Target className="w-20 h-20 mx-auto text-gray-400" />
-          )}
-
-          <h2 className={`text-2xl font-bold mt-4 ${
-            won ? 'text-yellow-400' : draw ? 'text-gray-400' : 'text-gray-300'
+          <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 ${
+            isWinner ? 'bg-gradient-to-br from-yellow-500 to-orange-500' :
+            isDraw ? 'bg-gradient-to-br from-gray-500 to-gray-600' :
+            'bg-gradient-to-br from-red-500 to-pink-500'
           }`}>
-            {won ? 'Victory!' : draw ? "It's a Draw!" : 'Defeat'}
+            {isWinner ? (
+              <Trophy className="w-10 h-10 text-white" />
+            ) : isDraw ? (
+              <HandshakeIcon className="w-10 h-10 text-white" />
+            ) : (
+              <Target className="w-10 h-10 text-white" />
+            )}
+          </div>
+          <h2 className="text-2xl font-bold mb-2">
+            {isWinner ? 'Victory!' : isDraw ? 'Draw!' : 'Defeat'}
           </h2>
+          <p className="text-gray-400">
+            {isWinner ? 'Congratulations! You won the battle!' :
+             isDraw ? 'A close match! Both players performed well.' :
+             'Better luck next time! Keep practicing!'}
+          </p>
         </div>
 
-        <div className="flex items-center justify-around p-4 bg-black/30 rounded-xl mb-6">
-          <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-lg font-bold mx-auto mb-2">
-              {user?.name.charAt(0)}
-            </div>
-            <p className="font-semibold">{user?.name}</p>
-            <p className="text-2xl font-bold text-green-400">{match.playerScore}</p>
-          </div>
-
-          <div className="text-2xl font-bold text-gray-500">VS</div>
-
-          <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center text-lg mx-auto mb-2">
-              🤖
-            </div>
-            <p className="font-semibold">{match.opponent.name}</p>
-            <p className="text-2xl font-bold text-red-400">{match.opponentScore}</p>
-          </div>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <Card className="bg-white/5 border-white/10">
+            <CardContent className="p-4 text-center">
+              <p className="text-2xl font-bold">{match.playerScore}</p>
+              <p className="text-sm text-gray-400">Your Score</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/5 border-white/10">
+            <CardContent className="p-4 text-center">
+              <p className="text-2xl font-bold">{match.opponentScore}</p>
+              <p className="text-sm text-gray-400">Opponent</p>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="space-y-3">
+        <div className="flex gap-3">
           <Button
-            onClick={onViewFeedback}
-            className="w-full py-5 bg-gradient-to-r from-purple-600 to-cyan-600"
+            variant="outline"
+            onClick={onClose}
+            className="flex-1 border-white/20 bg-white/5 hover:bg-white/10"
           >
-            <Brain className="w-4 h-4 mr-2" />
-            View Performance Analysis
+            Play Again
           </Button>
           <Button
-            onClick={onClose}
-            variant="outline"
-            className="w-full py-5 border-white/20 bg-white/5"
+            onClick={onViewFeedback}
+            className="flex-1 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500"
           >
-            Return Home
+            View Feedback
           </Button>
         </div>
       </motion.div>
     </motion.div>
+  );
+}
+
+// Handshake Icon for draw
+function HandshakeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.77L12 20.65l7.65-7.65.77-.77a5.4 5.4 0 0 0 0-7.65z" />
+    </svg>
   );
 }
 
@@ -1422,7 +1294,7 @@ function CoachingFeedbackModal({
   onClose
 }: {
   feedback: CoachingFeedback;
-  subject?: string;
+  subject: string | null;
   onClose: () => void;
 }) {
   return (
@@ -1430,55 +1302,71 @@ function CoachingFeedbackModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-lg bg-gradient-to-br from-slate-900 to-purple-950 rounded-2xl p-6 border border-purple-500/20 my-8"
+        className="bg-gradient-to-br from-slate-900 to-cyan-900 rounded-2xl p-6 max-w-md w-full border border-white/10 max-h-[80vh] overflow-y-auto"
       >
-        <div className="text-center mb-6">
-          <Brain className="w-16 h-16 mx-auto text-purple-400 mb-2" />
-          <h2 className="text-2xl font-bold">Performance Analysis</h2>
-          <p className="text-gray-400 text-sm mt-1">AI-powered coaching feedback</p>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <Brain className="w-6 h-6 text-cyan-400" />
+            AI Coaching Feedback
+          </h2>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            <X className="w-5 h-5" />
+          </Button>
         </div>
 
+        {subject && (
+          <Badge className="mb-4 bg-purple-500/20 text-purple-300 border-purple-500/30">
+            {subjectIcons[subject]} {subject}
+          </Badge>
+        )}
+
         <div className="space-y-4">
-          <div className="p-4 bg-white/5 rounded-xl">
-            <h3 className="font-semibold mb-2 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-yellow-400" />
-              Strengths
-            </h3>
+          <div>
+            <h3 className="font-semibold mb-2 text-green-400">Strengths</h3>
             <p className="text-sm text-gray-300">{feedback.strengths}</p>
           </div>
 
-          <div className="p-4 bg-white/5 rounded-xl">
-            <h3 className="font-semibold mb-2 flex items-center gap-2">
-              <Target className="w-4 h-4 text-red-400" />
-              Areas to Improve
-            </h3>
-            <p className="text-sm text-gray-300">{feedback.weaknesses}</p>
+          <div>
+            <h3 className="font-semibold mb-2 text-yellow-400">Areas to Improve</h3>
+            <p className="text-sm text-gray-300">{feedback.improvements}</p>
           </div>
 
-          <div className="p-4 bg-white/5 rounded-xl">
-            <h3 className="font-semibold mb-2 flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-cyan-400" />
-              Study Tips
-            </h3>
-            <p className="text-sm text-gray-300">{feedback.recommendations?.join('. ') || 'Keep practicing!'}</p>
+          <div>
+            <h3 className="font-semibold mb-2 text-cyan-400">Study Tips</h3>
+            <ul className="space-y-1">
+              {feedback.studyTips.map((tip, index) => (
+                <li key={index} className="text-sm text-gray-300 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />
+                  {tip}
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Video Suggestions */}
-          {subject && (
-            <VideoSuggestions 
-              subject={subject} 
-              showAfterBattle={true}
-            />
+          {feedback.recommendedTopics.length > 0 && (
+            <div>
+              <h3 className="font-semibold mb-2 text-purple-400">Recommended Topics</h3>
+              <div className="flex flex-wrap gap-2">
+                {feedback.recommendedTopics.map((topic, index) => (
+                  <Badge key={index} variant="outline" className="bg-purple-500/10 border-purple-500/30">
+                    {topic}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           )}
         </div>
 
-        <Button onClick={onClose} className="w-full mt-6 py-5 bg-gradient-to-r from-purple-600 to-cyan-600">
+        <Button
+          onClick={onClose}
+          className="w-full mt-6 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500"
+        >
           Continue
         </Button>
       </motion.div>
@@ -1495,29 +1383,29 @@ function FriendsModal({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-md bg-gradient-to-br from-slate-900 to-purple-950 rounded-2xl p-6 border border-purple-500/20"
+        className="bg-gradient-to-br from-slate-900 to-purple-900 rounded-2xl p-6 max-w-md w-full border border-white/10"
       >
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold flex items-center gap-2">
-            <Users className="w-5 h-5 text-purple-400" />
+            <Users className="w-6 h-6 text-purple-400" />
             Friends
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
-        <div className="space-y-3 max-h-96 overflow-y-auto">
+        <div className="space-y-2">
           {friends.map((friend) => (
             <div
               key={friend.id}
-              className="flex items-center justify-between p-3 bg-white/5 rounded-xl"
+              className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10"
             >
               <div className="flex items-center gap-3">
                 <div className="relative">
@@ -1525,34 +1413,36 @@ function FriendsModal({ onClose }: { onClose: () => void }) {
                     {friend.name.charAt(0)}
                   </div>
                   <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-slate-900 ${
-                    friend.status === 'online' ? 'bg-green-500' :
-                    friend.status === 'in_match' ? 'bg-yellow-500' : 'bg-gray-500'
+                    friend.status === 'online' ? 'bg-green-400' :
+                    friend.status === 'in_match' ? 'bg-yellow-400' :
+                    'bg-gray-400'
                   }`} />
                 </div>
                 <div>
                   <p className="font-medium">{friend.name}</p>
                   <p className="text-xs text-gray-400">
                     {friend.status === 'in_match' 
-                      ? `In ${friend.currentSubject} match` 
-                      : friend.status.charAt(0).toUpperCase() + friend.status.slice(1)}
+                      ? `In ${friend.currentSubject} match`
+                      : friend.status === 'online' 
+                        ? 'Online' 
+                        : 'Offline'
+                    }
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs">
-                  {friend.knowledgeRating} KR
-                </Badge>
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                  <MessageCircle className="w-4 h-4" />
-                </Button>
+              <div className="text-right">
+                <p className="text-sm font-bold text-purple-400">{friend.knowledgeRating}</p>
+                <p className="text-xs text-gray-400">KR</p>
               </div>
             </div>
           ))}
         </div>
 
-        <Button className="w-full mt-6" variant="outline">
-          <UserPlus className="w-4 h-4 mr-2" />
-          Add Friend
+        <Button
+          onClick={onClose}
+          className="w-full mt-4 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500"
+        >
+          Close
         </Button>
       </motion.div>
     </motion.div>
@@ -1560,32 +1450,38 @@ function FriendsModal({ onClose }: { onClose: () => void }) {
 }
 
 // Dashboard Component
-function Dashboard({ user }: { user: UserType | null }) {
+function Dashboard({ user }: { user: any }) {
   const krTier = user ? getKRTier(user.knowledgeRating) : null;
 
   return (
     <div className="space-y-6 pb-20">
-      <div className="text-center py-6">
-        <h2 className="text-2xl font-bold mb-2">Your Dashboard</h2>
-        <p className="text-gray-400">Track your progress and performance</p>
+      <div className="text-center py-4">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent mb-1">
+          Your Stats
+        </h1>
+        <p className="text-sm text-gray-400">Track your progress</p>
       </div>
 
-      {krTier && (
-        <Card className="bg-gradient-to-r from-purple-900/50 to-cyan-900/50 border-purple-500/20">
+      {user && krTier && (
+        <Card className="bg-gradient-to-br from-purple-900/30 to-cyan-900/30 border-purple-500/30">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-sm text-gray-400">Knowledge Rating</p>
-                <p className="text-3xl font-bold">{user?.knowledgeRating}</p>
+                <p className="text-sm text-gray-400">Current Tier</p>
+                <p className={`text-2xl font-bold ${krTier.color}`}>{krTier.tier}</p>
               </div>
-              <Badge className={`${krTier.color} bg-white/10`}>
-                {krTier.tier}
-              </Badge>
+              <div className="text-right">
+                <p className="text-sm text-gray-400">Knowledge Rating</p>
+                <p className="text-2xl font-bold">{user.knowledgeRating}</p>
+              </div>
             </div>
-            <Progress value={krTier.progress} className="h-2" />
-            <p className="text-xs text-gray-400 mt-2">
-              {krTier.progress.toFixed(0)}% to {krTier.nextTier}
-            </p>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Progress to {krTier.nextTier}</span>
+                <span>{Math.round(krTier.progress)}%</span>
+              </div>
+              <Progress value={krTier.progress} className="h-2" />
+            </div>
           </CardContent>
         </Card>
       )}
@@ -1595,14 +1491,14 @@ function Dashboard({ user }: { user: UserType | null }) {
           <CardContent className="p-4 text-center">
             <Target className="w-8 h-8 mx-auto mb-2 text-green-400" />
             <p className="text-2xl font-bold">{user?.totalWins || 0}</p>
-            <p className="text-sm text-gray-400">Wins</p>
+            <p className="text-sm text-gray-400">Total Wins</p>
           </CardContent>
         </Card>
         <Card className="bg-white/5 border-white/10">
           <CardContent className="p-4 text-center">
             <XCircle className="w-8 h-8 mx-auto mb-2 text-red-400" />
             <p className="text-2xl font-bold">{user?.totalLosses || 0}</p>
-            <p className="text-sm text-gray-400">Losses</p>
+            <p className="text-sm text-gray-400">Total Losses</p>
           </CardContent>
         </Card>
         <Card className="bg-white/5 border-white/10">
@@ -1614,7 +1510,7 @@ function Dashboard({ user }: { user: UserType | null }) {
         </Card>
         <Card className="bg-white/5 border-white/10">
           <CardContent className="p-4 text-center">
-            <Star className="w-8 h-8 mx-auto mb-2 text-yellow-400" />
+            <Trophy className="w-8 h-8 mx-auto mb-2 text-yellow-400" />
             <p className="text-2xl font-bold">{user?.bestStreak || 0}</p>
             <p className="text-sm text-gray-400">Best Streak</p>
           </CardContent>
@@ -1624,148 +1520,189 @@ function Dashboard({ user }: { user: UserType | null }) {
   );
 }
 
-// Leaderboard View
+// Leaderboard View Component
 function LeaderboardView() {
   const { leaderboard, leaderboardCategory, setLeaderboardCategory } = useAppStore();
 
   return (
     <div className="space-y-6 pb-20">
-      <div className="text-center py-6">
-        <h2 className="text-2xl font-bold mb-2">Leaderboard</h2>
-        <p className="text-gray-400">See how you rank against other players</p>
+      <div className="text-center py-4">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent mb-1">
+          Leaderboard
+        </h1>
+        <p className="text-sm text-gray-400">Top performers this season</p>
       </div>
 
       <Tabs value={leaderboardCategory} onValueChange={setLeaderboardCategory}>
-        <TabsList className="w-full grid grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3 bg-white/5">
           <TabsTrigger value="global">Global</TabsTrigger>
-          <TabsTrigger value="country">Country</TabsTrigger>
           <TabsTrigger value="friends">Friends</TabsTrigger>
+          <TabsTrigger value="country">Country</TabsTrigger>
         </TabsList>
-        <TabsContent value={leaderboardCategory} className="mt-4">
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-0">
-              <div className="divide-y divide-white/10">
-                {leaderboard.length > 0 ? leaderboard.map((entry, index) => (
-                  <div key={entry.userId} className="flex items-center justify-between p-4">
-                    <div className="flex items-center gap-3">
-                      <span className={`w-8 text-center font-bold ${
-                        index === 0 ? 'text-yellow-400' :
-                        index === 1 ? 'text-gray-300' :
-                        index === 2 ? 'text-orange-400' : 'text-gray-500'
-                      }`}>
-                        #{index + 1}
-                      </span>
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-sm font-bold">
-                        {entry.name?.charAt(0) || '?'}
-                      </div>
-                      <div>
-                        <p className="font-medium">{entry.name || 'Unknown'}</p>
-                        <p className="text-xs text-gray-400">{entry.points} pts</p>
-                      </div>
-                    </div>
-                    <Badge variant="outline">{entry.rank}</Badge>
+
+        <TabsContent value={leaderboardCategory} className="space-y-2 mt-4">
+          {leaderboard.map((entry, index) => (
+            <motion.div
+              key={entry.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <Card className={`bg-white/5 border-white/10 ${index < 3 ? 'border-yellow-500/30' : ''}`}>
+                <CardContent className="p-3 flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                    index === 0 ? 'bg-yellow-500' :
+                    index === 1 ? 'bg-gray-400' :
+                    index === 2 ? 'bg-orange-600' :
+                    'bg-white/10'
+                  }`}>
+                    {index + 1}
                   </div>
-                )) : (
-                  <div className="p-8 text-center text-gray-400">
-                    No leaderboard data available
+                  <div className="flex-1">
+                    <p className="font-medium">{entry.name}</p>
+                    <p className="text-xs text-gray-400">{entry.country || 'Unknown'}</p>
                   </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="text-right">
+                    <p className="font-bold text-purple-400">{entry.knowledgeRating}</p>
+                    <p className="text-xs text-gray-400">KR</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </TabsContent>
       </Tabs>
     </div>
   );
 }
 
-// Profile View
-function ProfileView({ user }: { user: UserType | null }) {
-  const krTier = user ? getKRTier(user.knowledgeRating) : null;
+// Profile View Component
+function ProfileView({ user }: { user: any }) {
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: '/' });
+  };
 
   return (
     <div className="space-y-6 pb-20">
-      <div className="text-center py-6">
-        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-3xl font-bold mx-auto mb-4">
-          {user?.name?.charAt(0) || '?'}
-        </div>
-        <h2 className="text-2xl font-bold">{user?.name || 'Unknown'}</h2>
-        <p className="text-gray-400">{user?.email}</p>
-        {krTier && (
-          <Badge className={`mt-2 ${krTier.color} bg-white/10`}>
-            {krTier.tier} • {user?.knowledgeRating} KR
-          </Badge>
-        )}
+      <div className="text-center py-4">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent mb-1">
+          Profile
+        </h1>
+        <p className="text-sm text-gray-400">Manage your account</p>
       </div>
 
-      <Card className="bg-white/5 border-white/10">
-        <CardHeader>
-          <CardTitle className="text-lg">Statistics</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex justify-between">
-            <span className="text-gray-400">Total Points</span>
-            <span className="font-medium">{user?.points?.toLocaleString() || 0}</span>
+      <Card className="bg-gradient-to-br from-purple-900/30 to-cyan-900/30 border-purple-500/30">
+        <CardContent className="p-6 text-center">
+          <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-2xl font-bold mb-4">
+            {user?.name?.charAt(0) || 'U'}
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">Win Rate</span>
-            <span className="font-medium">
-              {user?.totalWins && user.totalWins + (user.totalLosses || 0) > 0
-                ? ((user.totalWins / (user.totalWins + (user.totalLosses || 0))) * 100).toFixed(1)
-                : 0}%
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">Country</span>
-            <span className="font-medium">{user?.country || 'Not set'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">Level</span>
-            <span className="font-medium">{user?.level || 'High School'}</span>
+          <h2 className="text-xl font-bold">{user?.name || 'Scholar'}</h2>
+          <p className="text-gray-400">{user?.email}</p>
+          <div className="flex justify-center gap-2 mt-3">
+            <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">
+              {user?.knowledgeRating || 800} KR
+            </Badge>
+            <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30">
+              {user?.level || 'High School'}
+            </Badge>
           </div>
         </CardContent>
       </Card>
+
+      <div className="space-y-2">
+        <Link href="/onboarding">
+          <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <CardContent className="p-4 flex items-center gap-3">
+              <HelpCircle className="w-5 h-5 text-purple-400" />
+              <span>Onboarding</span>
+              <ChevronRight className="w-5 h-5 ml-auto text-gray-400" />
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/programs">
+          <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <CardContent className="p-4 flex items-center gap-3">
+              <BookOpen className="w-5 h-5 text-purple-400" />
+              <span>Programs</span>
+              <ChevronRight className="w-5 h-5 ml-auto text-gray-400" />
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/pricing">
+          <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <CardContent className="p-4 flex items-center gap-3">
+              <Crown className="w-5 h-5 text-yellow-400" />
+              <span>Subscription</span>
+              <ChevronRight className="w-5 h-5 ml-auto text-gray-400" />
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+
+      <Button
+        onClick={handleSignOut}
+        variant="outline"
+        className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10"
+      >
+        <LogOut className="w-4 h-4 mr-2" />
+        Sign Out
+      </Button>
     </div>
   );
 }
 
-// Settings View
+// Settings View Component
 function SettingsView() {
   const { settings, updateSettings } = useAppStore();
 
   return (
     <div className="space-y-6 pb-20">
-      <div className="text-center py-6">
-        <h2 className="text-2xl font-bold mb-2">Settings</h2>
-        <p className="text-gray-400">Customize your experience</p>
+      <div className="text-center py-4">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent mb-1">
+          Settings
+        </h1>
+        <p className="text-sm text-gray-400">Customize your experience</p>
       </div>
 
       <Card className="bg-white/5 border-white/10">
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Bell className="w-5 h-5 text-purple-400" />
-            Notifications
-          </CardTitle>
+          <CardTitle className="text-lg">Notifications</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Push Notifications</p>
-              <p className="text-sm text-gray-400">Get notified about matches</p>
+              <p className="text-sm text-gray-400">Receive match invites and updates</p>
             </div>
             <Switch
               checked={settings.notifications}
               onCheckedChange={(checked) => updateSettings({ notifications: checked })}
             />
           </div>
+          <Separator className="bg-white/10" />
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Email Notifications</p>
-              <p className="text-sm text-gray-400">Weekly progress reports</p>
+              <p className="font-medium">Sound Effects</p>
+              <p className="text-sm text-gray-400">Play sounds during battles</p>
             </div>
             <Switch
-              checked={settings.notifications}
-              onCheckedChange={(checked) => updateSettings({ notifications: checked })}
+              checked={settings.soundEffects}
+              onCheckedChange={(checked) => updateSettings({ soundEffects: checked })}
+            />
+          </div>
+          <Separator className="bg-white/10" />
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Vibration</p>
+              <p className="text-sm text-gray-400">Haptic feedback during battles</p>
+            </div>
+            <Switch
+              checked={settings.vibration}
+              onCheckedChange={(checked) => updateSettings({ vibration: checked })}
             />
           </div>
         </CardContent>
@@ -1773,83 +1710,19 @@ function SettingsView() {
 
       <Card className="bg-white/5 border-white/10">
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Volume2 className="w-5 h-5 text-purple-400" />
-            Sound & Vibration
-          </CardTitle>
+          <CardTitle className="text-lg">Display</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Sound Effects</p>
-              <p className="text-sm text-gray-400">Play sounds during matches</p>
+              <p className="font-medium">Dark Mode</p>
+              <p className="text-sm text-gray-400">Use dark theme</p>
             </div>
             <Switch
-              checked={settings.sounds}
-              onCheckedChange={(checked) => updateSettings({ sounds: checked })}
+              checked={settings.darkMode}
+              onCheckedChange={(checked) => updateSettings({ darkMode: checked })}
             />
           </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Vibration</p>
-              <p className="text-sm text-gray-400">Haptic feedback</p>
-            </div>
-            <Switch
-              checked={settings.vibrations}
-              onCheckedChange={(checked) => updateSettings({ vibrations: checked })}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-white/5 border-white/10">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Globe className="w-5 h-5 text-purple-400" />
-            Language
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <select
-            value={settings.language}
-            onChange={(e) => updateSettings({ language: e.target.value })}
-            className="w-full p-3 rounded-lg bg-white/5 border border-white/10 text-white"
-          >
-            <option value="en">English</option>
-            <option value="es">Español</option>
-            <option value="fr">Français</option>
-            <option value="zh">中文</option>
-            <option value="ar">العربية</option>
-            <option value="hi">हिंदी</option>
-            <option value="pt">Português</option>
-          </select>
-        </CardContent>
-      </Card>
-
-      {/* Help & Onboarding */}
-      <Card className="bg-white/5 border-white/10">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <HelpCircle className="w-5 h-5 text-purple-400" />
-            Help & Getting Started
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Link href="/onboarding">
-            <Button
-              variant="outline"
-              className="w-full justify-between border-white/20 bg-white/5 hover:bg-white/10"
-            >
-              <div className="flex items-center gap-2">
-                <Info className="w-4 h-4" />
-                <span>View Onboarding Guide</span>
-              </div>
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </Link>
-          <p className="text-xs text-gray-400 text-center">
-            Review how EduSparring works and learn about all features
-          </p>
         </CardContent>
       </Card>
     </div>
