@@ -1,0 +1,51 @@
+PROJECT IDENTIFIER: EDUSPARRING-VERCEL-2026
+
+"I have a project called EduSparring (identifier: EDUSPARRING-VERCEL-2026). It's a gamified exam prep platform deployed on Vercel. 
+
+ADDITIONAL ESSENTIAL INFORMATION 
+
+PROJECT: EduSparring - Gamified Exam Prep Platform with Knowledge Battles
+
+GITHUB: https://github.com/emmanuelgodwise-alt/edusparring-
+REPO: emmanuelgodwise-alt/edusparring-
+
+VERCEL: Deployed (live production)
+
+SUPABASE POOLER: postgresql://postgres.dzrdesvrpcdlfipnpwxo:MyHeadIsThereNow%28%3A%292026@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+
+SUPABASE DIRECT: postgresql://postgres.dzrdesvrpcdlfipnpwxo:MyHeadIsThereNow%28%3A%292026@aws-0-eu-west-1.pooler.supabase.com:5432/postgres
+
+TECH STACK: Next.js 16, TypeScript, Tailwind CSS 4, Prisma, Supabase, NextAuth.js
+
+CORE FEATURES: Sparring battles, AI Tutor, Video Lessons, Tournaments, KR Rating System, Mock Job Placements, Guardian Dashboard, Safety Architecture
+
+SUBSCRIPTION TIERS: Free, Scholar ($4.99), Champion ($9.99), Elite ($19.99)
+
+STATUS: MVP live, needs API integrations (AI, Translation, Payments)
+
+
+I need help with [describe issue].”
+
+
+
+2.
+
+You encounter issue on live EduSparring
+        ↓
+Open new chat session
+        ↓
+Paste: "PROJECT IDENTIFIER: EDUSPARRING-VERCEL-2026..."
+        ↓
+Describe your issue
+        ↓
+I provide solution/code
+        ↓
+You apply to GitHub repo
+        ↓
+Vercel auto-deploys
+        ↓
+Issue resolved!
+
+
+
+
