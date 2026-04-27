@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
   <defs>
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#a855f7"/>
@@ -6,12 +6,23 @@
     </linearGradient>
   </defs>
 
-  <!-- Rounded square background -->
-  <rect x="1" y="1" width="30" height="30" rx="6" fill="url(#bgGradient)"/>
+  <!-- Rounded square background matching website logo -->
+  <rect x="0.5" y="0.5" width="23" height="23" rx="4" fill="url(#bgGradient)"/>
 
-  <!-- Simplified swords icon for small size -->
-  <g fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round">
-    <line x1="8" y1="8" x2="20" y2="20"/>
-    <line x1="24" y1="8" x2="12" y2="20"/>
+  <!-- EXACT Lucide Swords icon -->
+  <g fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- First sword blade -->
+    <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/>
+    <!-- First sword handle parts -->
+    <line x1="13" x2="19" y1="19" y2="13"/>
+    <line x1="16" x2="20" y1="16" y2="20"/>
+    <line x1="19" x2="21" y1="21" y2="19"/>
+
+    <!-- Second sword blade -->
+    <polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/>
+    <!-- Second sword handle parts -->
+    <line x1="5" x2="9" y1="14" y2="18"/>
+    <line x1="7" x2="4" y1="17" y2="20"/>
+    <line x1="3" x2="5" y1="19" y2="21"/>
   </g>
 </svg>
