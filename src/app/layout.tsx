@@ -27,7 +27,13 @@ export const metadata: Metadata = {
   keywords: ["EduSparring", "Education", "Learning", "Competition", "AI", "Gamification", "Quiz", "Battle", "Knowledge"],
   authors: [{ name: "EduSparring Team" }],
   icons: {
-    icon: "/edusparring-logo.svg",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/logo.svg", type: "image/svg+xml", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/icons/icon-192x192.svg", type: "image/svg+xml", sizes: "192x192" },
+    ],
   },
   manifest: "/manifest.json",
   appleWebApp: {
